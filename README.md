@@ -1,12 +1,12 @@
-# TemplateSpringBoot
+# ContractLoader
 
-_A concise description of what this Spring Boot microservice does._
+Microservice for one-time migration of legacy contract data into the Contract service.
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Java 21 or higher**
+- **Java 25 or higher**
 - **Maven**
 - **MariaDB**(if applicable)
 - **Git**
