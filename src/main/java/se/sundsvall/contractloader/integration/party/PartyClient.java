@@ -26,6 +26,6 @@ public interface PartyClient {
 	 * @throws org.zalando.problem.ThrowableProblem
 	 */
 	@GetMapping(path = "/{municipalityId}/{type}/{legalId}/partyId", produces = TEXT_PLAIN_VALUE)
-	Optional<String> getPartyId(@PathVariable("municipalityId") String municipalityId, @PathVariable("type") PartyType partyType, @PathVariable("legalId") String legalId);
+	Optional<String> getPartyId(@PathVariable String municipalityId, @PathVariable PartyType type, @PathVariable String legalId);
 
 }
