@@ -1,6 +1,30 @@
 #========================================
 # Test profile settings (junit tests)
 #========================================
-logging:
-  level:
-    root: DEBUG
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          party:
+            token-uri: http://token.url
+        registration:
+          party:
+            client-id: client-id
+            client-secret: client-secret
+
+integration:
+  party:
+    url: http://localhost:${wiremock.server.port:}/party
+    token-uri: http://localhost:${wiremock.server.port:}/api-gateway/token
+    client-id: the-client-id
+    client-secret: the-client-secret
+    connectTimeout: 10
+    readTimeout: 20
+  contract:
+    url: http://localhost:${wiremock.server.port:}/contract
+    token-uri: http://localhost:${wiremock.server.port:}/api-gateway/token
+    client-id: the-client-id
+    client-secret: the-client-secret
+    connectTimeout: 10
+    readTimeout: 20

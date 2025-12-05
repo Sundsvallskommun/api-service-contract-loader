@@ -11,3 +11,22 @@ openapi:
 spring:
   application:
     name: contract-loader
+  security:
+    oauth2:
+      client:
+        provider:
+          party:
+            token-uri: ${integration.party.token-uri}
+          contract:
+            token-uri: ${integration.contract.token-uri}
+        registration:
+          party:
+            authorization-grant-type: client_credentials
+            provider: party
+            client-id: ${integration.party.client-id}
+            client-secret: ${integration.party.client-secret}
+          contract:
+            authorization-grant-type: client_credentials
+            provider: contract
+            client-id: ${integration.contract.client-id}
+            client-secret: ${integration.contract.client-secret}
