@@ -1,9 +1,6 @@
 #========================================
 # General settings
 #========================================
-logging:
-  level:
-    root: INFO
 openapi:
   name: ${spring.application.name}
   title: ${spring.application.name}
@@ -11,6 +8,24 @@ openapi:
 spring:
   application:
     name: contract-loader
+  flyway:
+    enabled: false
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      pool-name: dbconnection-pool
+    type: com.zaxxer.hikari.HikariDataSource
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: false
+      jakarta:
+        persistence:
+          schema-generation:
+            database:
+              action: none
+    show-sql: false
   security:
     oauth2:
       client:
@@ -30,3 +45,4 @@ spring:
             provider: contract
             client-id: ${integration.contract.client-id}
             client-secret: ${integration.contract.client-secret}
+

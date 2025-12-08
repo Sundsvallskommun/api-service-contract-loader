@@ -1,3 +1,32 @@
 #========================================
 # Test profile settings (IT tests)
 #========================================
+spring:
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:mariadb:10.6:///ittest
+  flyway:
+    enabled: true
+  jpa:
+    properties:
+      jakarta:
+        persistence:
+          schema-generation:
+            database:
+              action: validate
+
+integration:
+  party:
+    url: http://localhost:${wiremock.server.port:}/party
+    token-uri: http://localhost:${wiremock.server.port:}/api-gateway/token
+    client-id: the-client-id
+    client-secret: the-client-secret
+    connectTimeout: 10
+    readTimeout: 20
+  contract:
+    url: http://localhost:${wiremock.server.port:}/contract
+    token-uri: http://localhost:${wiremock.server.port:}/api-gateway/token
+    client-id: the-client-id
+    client-secret: the-client-secret
+    connectTimeout: 10
+    readTimeout: 20
