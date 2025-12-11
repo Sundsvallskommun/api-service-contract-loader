@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -22,100 +21,75 @@ public class FastighetEntity {
 	@Column(name = "pk_id", nullable = false)
 	private Long id;
 
-	@Size(max = 255)
 	@Column(name = "hyresid")
 	private String hyresid;
 
-	@Size(max = 255)
 	@Column(name = "foretag")
 	private String foretag;
 
-	@Size(max = 255)
 	@Column(name = "foretagsnamn")
 	private String foretagsnamn;
 
-	@Size(max = 255)
 	@Column(name = "fastighetsnr")
 	private String fastighetsnr;
 
-	@Size(max = 255)
 	@Column(name = "fastighetsbeteckning")
 	private String fastighetsbeteckning;
 
-	@Size(max = 255)
 	@Column(name = "kommun")
 	private String kommun;
 
-	@Size(max = 255)
 	@Column(name = "trakt")
 	private String trakt;
 
-	@Size(max = 255)
 	@Column(name = "block")
 	private String block;
 
 	@Column(name = "fangesdatum")
 	private OffsetDateTime fangesdatum;
 
-	@Size(max = 255)
 	@Column(name = "agarforhallande")
 	private String agarforhallande;
 
-	@Size(max = 255)
 	@Column(name = "agare")
 	private String agare;
 
-	@Size(max = 255)
 	@Column(name = "agarenamn")
 	private String agarenamn;
 
-	@Size(max = 255)
 	@Column(name = "postadress")
 	private String postadress;
 
-	@Size(max = 255)
 	@Column(name = "postadress2")
 	private String postadress2;
 
-	@Size(max = 255)
 	@Column(name = "postnummer")
 	private String postnummer;
 
-	@Size(max = 255)
 	@Column(name = "ort")
 	private String ort;
 
-	@Size(max = 255)
 	@Column(name = "land")
 	private String land;
 
-	@Size(max = 255)
 	@Column(name = "tomtratt")
 	private String tomtratt;
 
-	@Size(max = 255)
 	@Column(name = "tomtratt_dodad_datum")
 	private String tomtrattDodadDatum;
 
-	@Size(max = 255)
 	@Column(name = "fran_datum")
 	private String franDatum;
 
-	@Size(max = 255)
 	@Column(name = "till_datum")
 	private String tillDatum;
 
-	@Size(max = 255)
 	@Column(name = "en_forvaltningsenhet_kopplad")
 	private String enForvaltningsenhetKopplad;
 
-	@Size(max = 255)
-	@Column(name = "id")
-	private String id1;
-
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "fastighetsnr", referencedColumnName = "fastighetsnr")
-	private List<NoteringEntity> noteringEntities;
+	private List<NoteringEntity> noteringar;
 
 	public static FastighetEntity create() {
 		return new FastighetEntity();
@@ -420,29 +394,16 @@ public class FastighetEntity {
 		return this;
 	}
 
-	public String getId1() {
-		return id1;
+	public List<NoteringEntity> getNoteringar() {
+		return noteringar;
 	}
 
-	public void setId1(String id1) {
-		this.id1 = id1;
+	public void setNoteringar(List<NoteringEntity> noteringar) {
+		this.noteringar = noteringar;
 	}
 
-	public FastighetEntity withId1(String id1) {
-		this.id1 = id1;
-		return this;
-	}
-
-	public List<NoteringEntity> getNoteringEntities() {
-		return noteringEntities;
-	}
-
-	public void setNoteringEntities(List<NoteringEntity> noteringEntities) {
-		this.noteringEntities = noteringEntities;
-	}
-
-	public FastighetEntity withNoteringEntities(List<NoteringEntity> noteringEntities) {
-		this.noteringEntities = noteringEntities;
+	public FastighetEntity withNoteringar(List<NoteringEntity> noteringar) {
+		this.noteringar = noteringar;
 		return this;
 	}
 
@@ -456,13 +417,13 @@ public class FastighetEntity {
 			&& Objects.equals(fangesdatum, that.fangesdatum) && Objects.equals(agarforhallande, that.agarforhallande) && Objects.equals(agare, that.agare) && Objects.equals(agarenamn, that.agarenamn)
 			&& Objects.equals(postadress, that.postadress) && Objects.equals(postadress2, that.postadress2) && Objects.equals(postnummer, that.postnummer) && Objects.equals(ort, that.ort) && Objects.equals(
 				land, that.land) && Objects.equals(tomtratt, that.tomtratt) && Objects.equals(tomtrattDodadDatum, that.tomtrattDodadDatum) && Objects.equals(franDatum, that.franDatum) && Objects.equals(tillDatum,
-					that.tillDatum) && Objects.equals(enForvaltningsenhetKopplad, that.enForvaltningsenhetKopplad) && Objects.equals(id1, that.id1) && Objects.equals(noteringEntities, that.noteringEntities);
+					that.tillDatum) && Objects.equals(enForvaltningsenhetKopplad, that.enForvaltningsenhetKopplad) && Objects.equals(noteringar, that.noteringar);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, hyresid, foretag, foretagsnamn, fastighetsnr, fastighetsbeteckning, kommun, trakt, block, fangesdatum, agarforhallande, agare, agarenamn, postadress, postadress2, postnummer, ort, land, tomtratt, tomtrattDodadDatum,
-			franDatum, tillDatum, enForvaltningsenhetKopplad, id1, noteringEntities);
+			franDatum, tillDatum, enForvaltningsenhetKopplad, noteringar);
 	}
 
 	@Override
@@ -491,8 +452,7 @@ public class FastighetEntity {
 			", franDatum='" + franDatum + '\'' +
 			", tillDatum='" + tillDatum + '\'' +
 			", enForvaltningsenhetKopplad='" + enForvaltningsenhetKopplad + '\'' +
-			", id1='" + id1 + '\'' +
-			", noteringEntities=" + noteringEntities +
+			", noteringar=" + noteringar +
 			'}';
 	}
 

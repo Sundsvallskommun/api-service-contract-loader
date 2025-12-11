@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -22,11 +21,9 @@ public class ArrendekontraktEntity {
 	@Column(name = "pk_id", nullable = false)
 	private Long id;
 
-	@Size(max = 255)
 	@Column(name = "arrendekontrakt")
 	private String arrendekontrakt;
 
-	@Size(max = 255)
 	@Column(name = "hyresid")
 	private String hyresid;
 
@@ -48,7 +45,6 @@ public class ArrendekontraktEntity {
 	@Column(name = "uppsagt_datum")
 	private OffsetDateTime uppsagtDatum;
 
-	@Size(max = 255)
 	@Column(name = "uppsagt_av")
 	private String uppsagtAv;
 
@@ -58,81 +54,62 @@ public class ArrendekontraktEntity {
 	@Column(name = "onskad_avflyttning")
 	private OffsetDateTime onskadAvflyttning;
 
-	@Size(max = 255)
 	@Column(name = "kontraktstyp")
 	private String kontraktstyp;
 
-	@Size(max = 255)
 	@Column(name = "upps_tid_arrendator")
 	private String uppsTidArrendator;
 
-	@Size(max = 255)
 	@Column(name = "enhet_upps_tid_arrendator")
 	private String enhetUppsTidArrendator;
 
-	@Size(max = 255)
 	@Column(name = "upps_tid_hyresvard")
 	private String uppsTidHyresvard;
 
-	@Size(max = 255)
 	@Column(name = "enhet_upps_tid_hyresvard")
 	private String enhetUppsTidHyresvard;
 
-	@Size(max = 255)
 	@Column(name = "forlangning")
 	private String forlangning;
 
-	@Size(max = 255)
 	@Column(name = "enhet_forlangning")
 	private String enhetForlangning;
 
-	@Size(max = 255)
 	@Column(name = "debiteringstyp")
 	private String debiteringstyp;
 
-	@Size(max = 255)
 	@Column(name = "kontraktsarea")
 	private String kontraktsarea;
 
-	@Size(max = 255)
 	@Column(name = "frifalt")
 	private String frifalt;
 
-	@Size(max = 255)
 	@Column(name = "fakturaperiod")
 	private String fakturaperiod;
 
-	@Size(max = 255)
 	@Column(name = "markning")
 	private String markning;
 
-	@Size(max = 255)
 	@Column(name = "kontraktsnamn")
 	private String kontraktsnamn;
 
-	@Size(max = 255)
 	@Column(name = "huvudkontrakt")
 	private String huvudkontrakt;
 
-	@Size(max = 255)
 	@Column(name = "kopplat_till_id")
 	private String kopplatTillId;
 
-	@Size(max = 255)
-	@Column(name = "id")
-	private String id1;
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "arrendekontrakt", referencedColumnName = "arrendekontrakt")
+	private List<ArrendekontraktsradEntity> arrendekontraktsrader;
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "arrendekontrakt", referencedColumnName = "arrendekontrakt")
-	private List<ArrendekontraktsraderEntity> arrendekontraktsraderEntities;
-
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "arrendekontrakt", referencedColumnName = "arrendekontrakt")
-	private List<ArrendatorEntity> arrendatorEntities;
+	private List<ArrendatorEntity> arrendatorer;
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "hyresid", referencedColumnName = "hyresid")
-	private List<FastighetEntity> fastigheterEntities;
+	private List<FastighetEntity> fastigheter;
 
 	public static ArrendekontraktEntity create() {
 		return new ArrendekontraktEntity();
@@ -489,55 +466,42 @@ public class ArrendekontraktEntity {
 		return this;
 	}
 
-	public String getId1() {
-		return id1;
+	public List<ArrendekontraktsradEntity> getArrendekontraktsrader() {
+		return arrendekontraktsrader;
 	}
 
-	public void setId1(String id1) {
-		this.id1 = id1;
+	public void setArrendekontraktsrader(List<ArrendekontraktsradEntity> arrendekontraktsrader) {
+		this.arrendekontraktsrader = arrendekontraktsrader;
 	}
 
-	public ArrendekontraktEntity withId1(String id1) {
-		this.id1 = id1;
+	public ArrendekontraktEntity withArrendekontraktsrader(List<ArrendekontraktsradEntity> arrendekontraktsrader) {
+		this.arrendekontraktsrader = arrendekontraktsrader;
 		return this;
 	}
 
-	public List<ArrendekontraktsraderEntity> getArrendekontraktsrader() {
-		return arrendekontraktsraderEntities;
+	public List<ArrendatorEntity> getArrendatorer() {
+		return arrendatorer;
 	}
 
-	public void setArrendekontraktsrader(List<ArrendekontraktsraderEntity> arrendekontraktsraderEntities) {
-		this.arrendekontraktsraderEntities = arrendekontraktsraderEntities;
+	public void setArrendatorer(List<ArrendatorEntity> arrendatorer) {
+		this.arrendatorer = arrendatorer;
 	}
 
-	public ArrendekontraktEntity withArrendekontraktsrader(List<ArrendekontraktsraderEntity> arrendekontraktsraderEntities) {
-		this.arrendekontraktsraderEntities = arrendekontraktsraderEntities;
+	public ArrendekontraktEntity withArrendatorer(List<ArrendatorEntity> arrendatorer) {
+		this.arrendatorer = arrendatorer;
 		return this;
 	}
 
-	public List<ArrendatorEntity> getArrendatorEntities() {
-		return arrendatorEntities;
+	public List<FastighetEntity> getFastigheter() {
+		return fastigheter;
 	}
 
-	public void setArrendatorEntities(List<ArrendatorEntity> arrendatorEntities) {
-		this.arrendatorEntities = arrendatorEntities;
+	public void setFastigheter(List<FastighetEntity> fastigheter) {
+		this.fastigheter = fastigheter;
 	}
 
-	public ArrendekontraktEntity withArrendatorEntities(List<ArrendatorEntity> arrendatorEntities) {
-		this.arrendatorEntities = arrendatorEntities;
-		return this;
-	}
-
-	public List<FastighetEntity> getFastigheterEntities() {
-		return fastigheterEntities;
-	}
-
-	public void setFastigheterEntities(List<FastighetEntity> fastigheterEntities) {
-		this.fastigheterEntities = fastigheterEntities;
-	}
-
-	public ArrendekontraktEntity withFastigheterEntities(List<FastighetEntity> fastigheterEntities) {
-		this.fastigheterEntities = fastigheterEntities;
+	public ArrendekontraktEntity withFastigheter(List<FastighetEntity> fastigheter) {
+		this.fastigheter = fastigheter;
 		return this;
 	}
 
@@ -553,15 +517,15 @@ public class ArrendekontraktEntity {
 			&& Objects.equals(uppsTidHyresvard, that.uppsTidHyresvard) && Objects.equals(enhetUppsTidHyresvard, that.enhetUppsTidHyresvard) && Objects.equals(forlangning, that.forlangning) && Objects.equals(
 				enhetForlangning, that.enhetForlangning) && Objects.equals(debiteringstyp, that.debiteringstyp) && Objects.equals(kontraktsarea, that.kontraktsarea) && Objects.equals(frifalt, that.frifalt) && Objects.equals(
 					fakturaperiod, that.fakturaperiod) && Objects.equals(markning, that.markning) && Objects.equals(kontraktsnamn, that.kontraktsnamn) && Objects.equals(huvudkontrakt, that.huvudkontrakt) && Objects.equals(
-						kopplatTillId, that.kopplatTillId) && Objects.equals(id1, that.id1) && Objects.equals(arrendekontraktsraderEntities, that.arrendekontraktsraderEntities) && Objects.equals(arrendatorEntities,
-							that.arrendatorEntities) && Objects.equals(fastigheterEntities, that.fastigheterEntities);
+						kopplatTillId, that.kopplatTillId) && Objects.equals(arrendekontraktsrader, that.arrendekontraktsrader) && Objects.equals(arrendatorer,
+							that.arrendatorer) && Objects.equals(fastigheter, that.fastigheter);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, arrendekontrakt, hyresid, kontraktsdatum, fromDatum, tomDatum, sistaDebiteringsdatum, godkantDatum, uppsagtDatum, uppsagtAv, preliminartUppsagtDatum, onskadAvflyttning, kontraktstyp, uppsTidArrendator,
-			enhetUppsTidArrendator, uppsTidHyresvard, enhetUppsTidHyresvard, forlangning, enhetForlangning, debiteringstyp, kontraktsarea, frifalt, fakturaperiod, markning, kontraktsnamn, huvudkontrakt, kopplatTillId, id1, arrendekontraktsraderEntities,
-			arrendatorEntities, fastigheterEntities);
+			enhetUppsTidArrendator, uppsTidHyresvard, enhetUppsTidHyresvard, forlangning, enhetForlangning, debiteringstyp, kontraktsarea, frifalt, fakturaperiod, markning, kontraktsnamn, huvudkontrakt, kopplatTillId, arrendekontraktsrader,
+			arrendatorer, fastigheter);
 	}
 
 	@Override
@@ -594,10 +558,9 @@ public class ArrendekontraktEntity {
 			", kontraktsnamn='" + kontraktsnamn + '\'' +
 			", huvudkontrakt='" + huvudkontrakt + '\'' +
 			", kopplatTillId='" + kopplatTillId + '\'' +
-			", id1='" + id1 + '\'' +
-			", arrendekontraktsraderEntities=" + arrendekontraktsraderEntities +
-			", arrendatorEntities=" + arrendatorEntities +
-			", fastigheterEntities=" + fastigheterEntities +
+			", arrendekontraktsrader=" + arrendekontraktsrader +
+			", arrendatorer=" + arrendatorer +
+			", fastigheter=" + fastigheter +
 			'}';
 	}
 

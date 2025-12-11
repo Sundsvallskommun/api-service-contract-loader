@@ -61,7 +61,6 @@ class FastighetEntityTest {
 		final var tillDatum = "tillDatum";
 		final var enForvaltningsenhetKopplad = "enForvaltningsenhetKopplad";
 		final var noteringEntities = List.of(new NoteringEntity());
-		final var id1 = "id1";
 
 		var fastighetEntity = FastighetEntity.create()
 			.withId(id)
@@ -87,8 +86,7 @@ class FastighetEntityTest {
 			.withFranDatum(franDatum)
 			.withTillDatum(tillDatum)
 			.withEnForvaltningsenhetKopplad(enForvaltningsenhetKopplad)
-			.withNoteringEntities(noteringEntities)
-			.withId1(id1);
+			.withNoteringar(noteringEntities);
 
 		assertThat(fastighetEntity).hasNoNullFieldsOrProperties();
 		assertThat(fastighetEntity.getId()).isEqualTo(id);
@@ -114,8 +112,7 @@ class FastighetEntityTest {
 		assertThat(fastighetEntity.getFranDatum()).isEqualTo(franDatum);
 		assertThat(fastighetEntity.getTillDatum()).isEqualTo(tillDatum);
 		assertThat(fastighetEntity.getEnForvaltningsenhetKopplad()).isEqualTo(enForvaltningsenhetKopplad);
-		assertThat(fastighetEntity.getNoteringEntities()).isEqualTo(noteringEntities);
-		assertThat(fastighetEntity.getId1()).isEqualTo(id1);
+		assertThat(fastighetEntity.getNoteringar()).isEqualTo(noteringEntities);
 	}
 
 	@Test

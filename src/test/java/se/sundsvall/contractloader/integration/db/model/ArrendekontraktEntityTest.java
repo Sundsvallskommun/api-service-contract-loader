@@ -65,9 +65,8 @@ class ArrendekontraktEntityTest {
 		final var huvudkontrakt = "huvudkontrakt";
 		final var kopplatTillId = "kopplatTillId";
 		final var arrendatorEntities = List.of(ArrendatorEntity.create());
-		final var arrendeKontratsraderEntities = List.of(ArrendekontraktsraderEntity.create());
+		final var arrendeKontratsraderEntities = List.of(ArrendekontraktsradEntity.create());
 		final var fastigheterEntities = List.of(FastighetEntity.create());
-		final var id1 = "id1";
 
 		var arrendekontraktEntity = ArrendekontraktEntity.create()
 			.withId(id)
@@ -97,10 +96,9 @@ class ArrendekontraktEntityTest {
 			.withKontraktsnamn(kontraktsnamn)
 			.withHuvudkontrakt(huvudkontrakt)
 			.withKopplatTillId(kopplatTillId)
-			.withArrendatorEntities(arrendatorEntities)
+			.withArrendatorer(arrendatorEntities)
 			.withArrendekontraktsrader(arrendeKontratsraderEntities)
-			.withFastigheterEntities(fastigheterEntities)
-			.withId1(id1);
+			.withFastigheter(fastigheterEntities);
 
 		assertThat(arrendekontraktEntity).hasNoNullFieldsOrProperties();
 		assertThat(arrendekontraktEntity.getId()).isEqualTo(id);
@@ -130,10 +128,9 @@ class ArrendekontraktEntityTest {
 		assertThat(arrendekontraktEntity.getKontraktsnamn()).isEqualTo(kontraktsnamn);
 		assertThat(arrendekontraktEntity.getHuvudkontrakt()).isEqualTo(huvudkontrakt);
 		assertThat(arrendekontraktEntity.getKopplatTillId()).isEqualTo(kopplatTillId);
-		assertThat(arrendekontraktEntity.getArrendatorEntities()).isEqualTo(arrendatorEntities);
+		assertThat(arrendekontraktEntity.getArrendatorer()).isEqualTo(arrendatorEntities);
 		assertThat(arrendekontraktEntity.getArrendekontraktsrader()).isEqualTo(arrendeKontratsraderEntities);
-		assertThat(arrendekontraktEntity.getFastigheterEntities()).isEqualTo(fastigheterEntities);
-		assertThat(arrendekontraktEntity.getId1()).isEqualTo(id1);
+		assertThat(arrendekontraktEntity.getFastigheter()).isEqualTo(fastigheterEntities);
 	}
 
 	@Test

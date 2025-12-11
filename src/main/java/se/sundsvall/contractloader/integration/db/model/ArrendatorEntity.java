@@ -6,51 +6,41 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "arrende_arrendator", schema = "contract_staging")
+@Table(name = "arrende_arrendator")
 public class ArrendatorEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "pk_id", nullable = false)
 	private Long id;
 
-	@Size(max = 255)
 	@Column(name = "arrendekontrakt")
 	private String arrendekontrakt;
 
-	@Size(max = 255)
 	@Column(name = "kontaktid")
 	private String kontaktid;
 
-	@Size(max = 255)
 	@Column(name = "person_org_nr")
 	private String personOrgNr;
 
-	@Size(max = 255)
 	@Column(name = "kategori")
 	private String kategori;
 
-	@Size(max = 255)
 	@Column(name = "namn")
 	private String namn;
 
-	@Size(max = 255)
 	@Column(name = "fornamn")
 	private String fornamn;
 
-	@Size(max = 255)
 	@Column(name = "efternamn")
 	private String efternamn;
 
-	@Size(max = 255)
 	@Column(name = "avdelning")
 	private String avdelning;
 
-	@Size(max = 255)
 	@Column(name = "kontraktsrelation")
 	private String kontraktsrelation;
 
@@ -60,77 +50,56 @@ public class ArrendatorEntity {
 	@Column(name = "relaterad_t_o_m_datum")
 	private OffsetDateTime relateradTomDatum;
 
-	@Size(max = 255)
 	@Column(name = "ordning")
 	private String ordning;
 
-	@Size(max = 255)
 	@Column(name = "postadress")
 	private String postadress;
 
-	@Size(max = 255)
 	@Column(name = "postadress2")
 	private String postadress2;
 
-	@Size(max = 255)
 	@Column(name = "postnummer")
 	private String postnummer;
 
-	@Size(max = 255)
 	@Column(name = "ort")
 	private String ort;
 
-	@Size(max = 255)
 	@Column(name = "land")
 	private String land;
 
-	@Size(max = 255)
 	@Column(name = "telefon_mobil")
 	private String telefonMobil;
 
-	@Size(max = 255)
 	@Column(name = "telefon_hem")
 	private String telefonHem;
 
-	@Size(max = 255)
 	@Column(name = "telefon_arbete")
 	private String telefonArbete;
 
-	@Size(max = 255)
 	@Column(name = "e_post")
 	private String epost;
 
-	@Size(max = 255)
 	@Column(name = "foredraget_kontaktsatt")
 	private String foredragetKontaktsatt;
 
-	@Size(max = 255)
 	@Column(name = "svefaktura")
 	private String svefaktura;
 
-	@Size(max = 255)
 	@Column(name = "betalarnummer_kontakt")
 	private String betalarnummerKontakt;
 
-	@Size(max = 255)
 	@Column(name = "betalarnummerlangd_kontakt")
 	private String betalarnummerlangdKontakt;
 
-	@Size(max = 255)
 	@Column(name = "clearingnummer_kontakt")
 	private String clearingnummerKontakt;
 
-	@Size(max = 255)
 	@Column(name = "konto_kontakt")
 	private String kontoKontakt;
 
-	@Size(max = 255)
 	@Column(name = "efakturaadress")
 	private String efakturaadress;
-
-	@Size(max = 255)
-	@Column(name = "id")
-	private String id1;
 
 	public Long getId() {
 		return id;
@@ -513,19 +482,6 @@ public class ArrendatorEntity {
 		return this;
 	}
 
-	public String getId1() {
-		return id1;
-	}
-
-	public void setId1(String id1) {
-		this.id1 = id1;
-	}
-
-	public ArrendatorEntity withId1(String id1) {
-		this.id1 = id1;
-		return this;
-	}
-
 	@Override
 	public boolean equals(final Object o) {
 		if (this == o) {
@@ -542,13 +498,13 @@ public class ArrendatorEntity {
 			&& Objects.equals(ort, that.ort) && Objects.equals(land, that.land) && Objects.equals(telefonMobil, that.telefonMobil) && Objects.equals(telefonHem, that.telefonHem) && Objects.equals(telefonArbete,
 				that.telefonArbete) && Objects.equals(epost, that.epost) && Objects.equals(foredragetKontaktsatt, that.foredragetKontaktsatt) && Objects.equals(svefaktura, that.svefaktura) && Objects.equals(
 					betalarnummerKontakt, that.betalarnummerKontakt) && Objects.equals(betalarnummerlangdKontakt, that.betalarnummerlangdKontakt) && Objects.equals(clearingnummerKontakt, that.clearingnummerKontakt) && Objects.equals(
-						kontoKontakt, that.kontoKontakt) && Objects.equals(efakturaadress, that.efakturaadress) && Objects.equals(id1, that.id1);
+						kontoKontakt, that.kontoKontakt) && Objects.equals(efakturaadress, that.efakturaadress);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, arrendekontrakt, kontaktid, personOrgNr, kategori, namn, fornamn, efternamn, avdelning, kontraktsrelation, relateradFromDatum, relateradTomDatum, ordning, postadress, postadress2, postnummer, ort, land, telefonMobil,
-			telefonHem, telefonArbete, epost, foredragetKontaktsatt, svefaktura, betalarnummerKontakt, betalarnummerlangdKontakt, clearingnummerKontakt, kontoKontakt, efakturaadress, id1);
+			telefonHem, telefonArbete, epost, foredragetKontaktsatt, svefaktura, betalarnummerKontakt, betalarnummerlangdKontakt, clearingnummerKontakt, kontoKontakt, efakturaadress);
 	}
 
 	@Override
@@ -583,7 +539,6 @@ public class ArrendatorEntity {
 			", clearingnummerKontakt='" + clearingnummerKontakt + '\'' +
 			", kontoKontakt='" + kontoKontakt + '\'' +
 			", efakturaadress='" + efakturaadress + '\'' +
-			", id1='" + id1 + '\'' +
 			'}';
 	}
 }

@@ -8,8 +8,6 @@ openapi:
 spring:
   application:
     name: contract-loader
-  flyway:
-    enabled: false
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     hikari:

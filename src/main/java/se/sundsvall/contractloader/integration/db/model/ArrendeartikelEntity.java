@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
@@ -17,61 +16,44 @@ public class ArrendeartikelEntity {
 	@Column(name = "pk_id", nullable = false)
 	private Long id;
 
-	@Size(max = 255)
 	@Column(name = "arrendeartikel")
 	private String arrendeartikel;
 
-	@Size(max = 255)
 	@Column(name = "artikelbenamning")
 	private String artikelbenamning;
 
-	@Size(max = 255)
 	@Column(name = "avitext")
 	private String avitext;
 
-	@Size(max = 255)
 	@Column(name = "artikelgrupp")
 	private String artikelgrupp;
 
-	@Size(max = 255)
 	@Column(name = "artikeltyp")
 	private String artikeltyp;
 
-	@Size(max = 255)
 	@Column(name = "reglering")
 	private String reglering;
 
-	@Size(max = 255)
 	@Column(name = "pris")
 	private String pris;
 
-	@Size(max = 255)
 	@Column(name = "ingar_i_kontraktssumma")
 	private String ingarIKontraktssumma;
 
-	@Size(max = 255)
 	@Column(name = "avdrag")
 	private String avdrag;
 
-	@Size(max = 255)
 	@Column(name = "debiteras_alltid_hel_period")
 	private String debiterasAlltidHelPeriod;
 
-	@Size(max = 255)
 	@Column(name = "avvikelsetolerans_procent")
 	private String avvikelsetoleransProcent;
 
-	@Size(max = 255)
 	@Column(name = "summarad")
 	private String summarad;
 
-	@Size(max = 255)
 	@Column(name = "aktiv")
 	private String aktiv;
-
-	@Size(max = 255)
-	@Column(name = "id")
-	private String id1;
 
 	public static ArrendeartikelEntity create() {
 		return new ArrendeartikelEntity();
@@ -259,19 +241,6 @@ public class ArrendeartikelEntity {
 		return this;
 	}
 
-	public String getId1() {
-		return id1;
-	}
-
-	public void setId1(String id1) {
-		this.id1 = id1;
-	}
-
-	public ArrendeartikelEntity withId1(String id1) {
-		this.id1 = id1;
-		return this;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
@@ -280,12 +249,12 @@ public class ArrendeartikelEntity {
 		return Objects.equals(id, that.id) && Objects.equals(arrendeartikel, that.arrendeartikel) && Objects.equals(artikelbenamning, that.artikelbenamning) && Objects.equals(avitext, that.avitext)
 			&& Objects.equals(artikelgrupp, that.artikelgrupp) && Objects.equals(artikeltyp, that.artikeltyp) && Objects.equals(reglering, that.reglering) && Objects.equals(pris, that.pris) && Objects.equals(
 				ingarIKontraktssumma, that.ingarIKontraktssumma) && Objects.equals(avdrag, that.avdrag) && Objects.equals(debiterasAlltidHelPeriod, that.debiterasAlltidHelPeriod) && Objects.equals(avvikelsetoleransProcent,
-					that.avvikelsetoleransProcent) && Objects.equals(summarad, that.summarad) && Objects.equals(aktiv, that.aktiv) && Objects.equals(id1, that.id1);
+					that.avvikelsetoleransProcent) && Objects.equals(summarad, that.summarad) && Objects.equals(aktiv, that.aktiv);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, arrendeartikel, artikelbenamning, avitext, artikelgrupp, artikeltyp, reglering, pris, ingarIKontraktssumma, avdrag, debiterasAlltidHelPeriod, avvikelsetoleransProcent, summarad, aktiv, id1);
+		return Objects.hash(id, arrendeartikel, artikelbenamning, avitext, artikelgrupp, artikeltyp, reglering, pris, ingarIKontraktssumma, avdrag, debiterasAlltidHelPeriod, avvikelsetoleransProcent, summarad, aktiv);
 	}
 
 	@Override
@@ -305,7 +274,6 @@ public class ArrendeartikelEntity {
 			", avvikelsetoleransProcent='" + avvikelsetoleransProcent + '\'' +
 			", summarad='" + summarad + '\'' +
 			", aktiv='" + aktiv + '\'' +
-			", id1='" + id1 + '\'' +
 			'}';
 	}
 }

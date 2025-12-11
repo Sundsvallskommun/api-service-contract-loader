@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import se.sundsvall.contractloader.integration.db.model.ArrendatorEntity;
 import se.sundsvall.contractloader.integration.db.model.ArrendekontraktEntity;
-import se.sundsvall.contractloader.integration.db.model.ArrendekontraktsraderEntity;
+import se.sundsvall.contractloader.integration.db.model.ArrendekontraktsradEntity;
 import se.sundsvall.contractloader.integration.db.model.FastighetEntity;
 
 @DataJpaTest
@@ -44,7 +44,7 @@ class ArrendekontraktRepositoryTest {
 				"ARRENDEKONTRAKT-2",
 				"ARRENDEKONTRAKT-3");
 
-		assertThat(contracts.getFirst().getArrendatorEntities()).hasSize(1)
+		assertThat(contracts.getFirst().getArrendatorer()).hasSize(1)
 			.extracting(
 				ArrendatorEntity::getNamn,
 				ArrendatorEntity::getPersonOrgNr)
@@ -53,13 +53,13 @@ class ArrendekontraktRepositoryTest {
 
 		assertThat(contracts.getFirst().getArrendekontraktsrader()).hasSize(2)
 			.extracting(
-				ArrendekontraktsraderEntity::getArrendeartikel,
-				ArrendekontraktsraderEntity::getArshyra)
+				ArrendekontraktsradEntity::getArrendeartikel,
+				ArrendekontraktsradEntity::getArshyra)
 			.containsExactly(
 				tuple("LGH  INDEX", "2450,00"),
 				tuple("LGH  INDEX", "2558,13"));
 
-		assertThat(contracts.getFirst().getFastigheterEntities()).hasSize(1)
+		assertThat(contracts.getFirst().getFastigheter()).hasSize(1)
 			.extracting(
 				FastighetEntity::getFastighetsnr,
 				FastighetEntity::getFastighetsbeteckning)
@@ -80,7 +80,7 @@ class ArrendekontraktRepositoryTest {
 			.containsExactlyInAnyOrder(
 				"ARRENDEKONTRAKT-1");
 
-		assertThat(contracts.getFirst().getArrendatorEntities()).hasSize(1)
+		assertThat(contracts.getFirst().getArrendatorer()).hasSize(1)
 			.extracting(
 				ArrendatorEntity::getNamn,
 				ArrendatorEntity::getPersonOrgNr)
@@ -89,13 +89,13 @@ class ArrendekontraktRepositoryTest {
 
 		assertThat(contracts.getFirst().getArrendekontraktsrader()).hasSize(2)
 			.extracting(
-				ArrendekontraktsraderEntity::getArrendeartikel,
-				ArrendekontraktsraderEntity::getArshyra)
+				ArrendekontraktsradEntity::getArrendeartikel,
+				ArrendekontraktsradEntity::getArshyra)
 			.containsExactly(
 				tuple("LGH  INDEX", "2450,00"),
 				tuple("LGH  INDEX", "2558,13"));
 
-		assertThat(contracts.getFirst().getFastigheterEntities()).hasSize(1)
+		assertThat(contracts.getFirst().getFastigheter()).hasSize(1)
 			.extracting(
 				FastighetEntity::getFastighetsnr,
 				FastighetEntity::getFastighetsbeteckning)

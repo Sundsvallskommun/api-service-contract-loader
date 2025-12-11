@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
@@ -17,105 +16,77 @@ public class NoteringEntity {
 	@Column(name = "pk_id", nullable = false)
 	private Long id;
 
-	@Size(max = 255)
 	@Column(name = "noteringsnamn")
 	private String noteringsnamn;
 
-	@Size(max = 255)
 	@Column(name = "prioritet")
 	private String prioritet;
 
-	@Size(max = 255)
 	@Column(name = "typ")
 	private String typ;
 
-	@Size(max = 255)
 	@Column(name = "folder")
 	private String folder;
 
-	@Size(max = 255)
 	@Column(name = "objektid")
 	private String objektid;
 
-	@Size(max = 255)
 	@Column(name = "objektid2")
 	private String objektid2;
 
-	@Size(max = 255)
 	@Column(name = "foretag")
 	private String foretag;
 
-	@Size(max = 255)
 	@Column(name = "forvaltningsenhet")
 	private String forvaltningsenhet;
 
-	@Size(max = 255)
 	@Column(name = "fastighetsnr")
 	private String fastighetsnr;
 
-	@Size(max = 255)
 	@Column(name = "byggnad")
 	private String byggnad;
 
-	@Size(max = 255)
 	@Column(name = "arrendeobjekt")
 	private String arrendeobjekt;
 
-	@Size(max = 255)
 	@Column(name = "byggnadsdel")
 	private String byggnadsdel;
 
-	@Size(max = 255)
 	@Column(name = "markyta")
 	private String markyta;
 
-	@Size(max = 255)
 	@Column(name = "system")
 	private String system;
 
-	@Size(max = 255)
 	@Column(name = "uppgang_vaning")
 	private String uppgangVaning;
 
-	@Size(max = 255)
 	@Column(name = "bilplats")
 	private String bilplats;
 
-	@Size(max = 255)
 	@Column(name = "lokal")
 	private String lokal;
 
-	@Size(max = 255)
 	@Column(name = "bostad")
 	private String bostad;
 
-	@Size(max = 255)
 	@Column(name = "underhallsenhet")
 	private String underhallsenhet;
 
-	@Size(max = 255)
 	@Column(name = "ovrigt_hyresobjekt")
 	private String ovrigtHyresobjekt;
 
-	@Size(max = 255)
 	@Column(name = "rum")
 	private String rum;
 
-	@Size(max = 255)
 	@Column(name = "komponent")
 	private String komponent;
 
-	@Size(max = 255)
 	@Column(name = "noteringsid")
 	private String noteringsid;
 
-	@Size(max = 255)
 	@Column(name = "filnamn")
 	private String filnamn;
-
-	@Size(max = 255)
-	@Column(name = "id")
-	private String id1;
 
 	public static NoteringEntity create() {
 		return new NoteringEntity();
@@ -446,19 +417,6 @@ public class NoteringEntity {
 		return this;
 	}
 
-	public String getId1() {
-		return id1;
-	}
-
-	public void setId1(String id1) {
-		this.id1 = id1;
-	}
-
-	public NoteringEntity withId1(String id1) {
-		this.id1 = id1;
-		return this;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
@@ -469,13 +427,13 @@ public class NoteringEntity {
 			&& Objects.equals(fastighetsnr, that.fastighetsnr) && Objects.equals(byggnad, that.byggnad) && Objects.equals(arrendeobjekt, that.arrendeobjekt) && Objects.equals(byggnadsdel, that.byggnadsdel)
 			&& Objects.equals(markyta, that.markyta) && Objects.equals(system, that.system) && Objects.equals(uppgangVaning, that.uppgangVaning) && Objects.equals(bilplats, that.bilplats) && Objects.equals(
 				lokal, that.lokal) && Objects.equals(bostad, that.bostad) && Objects.equals(underhallsenhet, that.underhallsenhet) && Objects.equals(ovrigtHyresobjekt, that.ovrigtHyresobjekt) && Objects.equals(rum, that.rum)
-			&& Objects.equals(komponent, that.komponent) && Objects.equals(noteringsid, that.noteringsid) && Objects.equals(filnamn, that.filnamn) && Objects.equals(id1, that.id1);
+			&& Objects.equals(komponent, that.komponent) && Objects.equals(noteringsid, that.noteringsid) && Objects.equals(filnamn, that.filnamn);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, noteringsnamn, prioritet, typ, folder, objektid, objektid2, foretag, forvaltningsenhet, fastighetsnr, byggnad, arrendeobjekt, byggnadsdel, markyta, system, uppgangVaning, bilplats, lokal, bostad, underhallsenhet,
-			ovrigtHyresobjekt, rum, komponent, noteringsid, filnamn, id1);
+			ovrigtHyresobjekt, rum, komponent, noteringsid, filnamn);
 	}
 
 	@Override
@@ -506,7 +464,6 @@ public class NoteringEntity {
 			", komponent='" + komponent + '\'' +
 			", noteringsid='" + noteringsid + '\'' +
 			", filnamn='" + filnamn + '\'' +
-			", id1='" + id1 + '\'' +
 			'}';
 	}
 }

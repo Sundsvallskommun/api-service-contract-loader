@@ -65,7 +65,6 @@ class ArrendatorEntityTest {
 		final var clearingnummerKontakt = "clearingnummerKontakt";
 		final var kontoKontakt = "kontoKontakt";
 		final var efakturaadress = "efakturaadress";
-		final var id1 = "id1";
 
 		var arrendatorEntity = ArrendatorEntity.create()
 			.withId(id)
@@ -96,8 +95,7 @@ class ArrendatorEntityTest {
 			.withBetalarnummerlangdKontakt(betalarnummerlangdKontakt)
 			.withClearingnummerKontakt(clearingnummerKontakt)
 			.withKontoKontakt(kontoKontakt)
-			.withEfakturaadress(efakturaadress)
-			.withId1(id1);
+			.withEfakturaadress(efakturaadress);
 
 		assertThat(arrendatorEntity).hasNoNullFieldsOrProperties();
 		assertThat(arrendatorEntity.getId()).isEqualTo(id);
@@ -129,7 +127,6 @@ class ArrendatorEntityTest {
 		assertThat(arrendatorEntity.getClearingnummerKontakt()).isEqualTo(clearingnummerKontakt);
 		assertThat(arrendatorEntity.getKontoKontakt()).isEqualTo(kontoKontakt);
 		assertThat(arrendatorEntity.getEfakturaadress()).isEqualTo(efakturaadress);
-		assertThat(arrendatorEntity.getId1()).isEqualTo(id1);
 	}
 
 	@Test

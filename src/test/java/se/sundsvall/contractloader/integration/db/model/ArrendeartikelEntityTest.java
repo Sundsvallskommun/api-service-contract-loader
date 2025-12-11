@@ -40,7 +40,6 @@ class ArrendeartikelEntityTest {
 		final var avvikelsetoleransProcent = "avvikelsetoleransProcent";
 		final var summarad = "summarad";
 		final var aktiv = "aktiv";
-		final var id1 = "id1";
 
 		var arrendeartikelEntity = ArrendeartikelEntity.create()
 			.withId(id)
@@ -56,8 +55,7 @@ class ArrendeartikelEntityTest {
 			.withDebiterasAlltidHelPeriod(debiterasAlltidHelPeriod)
 			.withAvvikelsetoleransProcent(avvikelsetoleransProcent)
 			.withSummarad(summarad)
-			.withAktiv(aktiv)
-			.withId1(id1);
+			.withAktiv(aktiv);
 
 		assertThat(arrendeartikelEntity).hasNoNullFieldsOrProperties();
 		assertThat(arrendeartikelEntity.getId()).isEqualTo(id);
@@ -74,7 +72,6 @@ class ArrendeartikelEntityTest {
 		assertThat(arrendeartikelEntity.getAvvikelsetoleransProcent()).isEqualTo(avvikelsetoleransProcent);
 		assertThat(arrendeartikelEntity.getSummarad()).isEqualTo(summarad);
 		assertThat(arrendeartikelEntity.getAktiv()).isEqualTo(aktiv);
-		assertThat(arrendeartikelEntity.getId1()).isEqualTo(id1);
 	}
 
 	@Test

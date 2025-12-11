@@ -51,7 +51,6 @@ class NoteringEntityTest {
 		final var komponent = "komponent";
 		final var noteringsid = "noteringsid";
 		final var filnamn = "filnamn";
-		final var id1 = "id1";
 
 		var noteringEntity = NoteringEntity.create()
 			.withId(id)
@@ -78,8 +77,7 @@ class NoteringEntityTest {
 			.withRum(rum)
 			.withKomponent(komponent)
 			.withNoteringsid(noteringsid)
-			.withFilnamn(filnamn)
-			.withId1(id1);
+			.withFilnamn(filnamn);
 
 		assertThat(noteringEntity).hasNoNullFieldsOrProperties();
 		assertThat(noteringEntity.getId()).isEqualTo(id);
@@ -107,7 +105,6 @@ class NoteringEntityTest {
 		assertThat(noteringEntity.getKomponent()).isEqualTo(komponent);
 		assertThat(noteringEntity.getNoteringsid()).isEqualTo(noteringsid);
 		assertThat(noteringEntity.getFilnamn()).isEqualTo(filnamn);
-		assertThat(noteringEntity.getId1()).isEqualTo(id1);
 	}
 
 	@Test

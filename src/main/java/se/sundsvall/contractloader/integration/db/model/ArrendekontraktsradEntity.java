@@ -9,28 +9,24 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "arrende_arrendekontraktsrader", schema = "contract_staging")
-public class ArrendekontraktsraderEntity {
+public class ArrendekontraktsradEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "pk_id", nullable = false)
 	private Long id;
 
-	@Size(max = 255)
 	@Column(name = "arrendekontrakt")
 	private String arrendekontrakt;
 
-	@Size(max = 255)
 	@Column(name = "arrendeartikel")
 	private String arrendeartikel;
 
-	@Size(max = 255)
 	@Column(name = "avitext")
 	private String avitext;
 
@@ -40,11 +36,9 @@ public class ArrendekontraktsraderEntity {
 	@Column(name = "debiteras_t_o_m_datum")
 	private OffsetDateTime debiterasTomDatum;
 
-	@Size(max = 255)
 	@Column(name = "basarshyra")
 	private String basarshyra;
 
-	@Size(max = 255)
 	@Column(name = "arshyra")
 	private String arshyra;
 
@@ -54,56 +48,42 @@ public class ArrendekontraktsraderEntity {
 	@Column(name = "del_av_ar_t_o_m")
 	private OffsetDateTime delAvArTom;
 
-	@Size(max = 255)
 	@Column(name = "indexklausul")
 	private String indexklausul;
 
-	@Size(max = 255)
 	@Column(name = "indexnamn")
 	private String indexnamn;
 
-	@Size(max = 255)
 	@Column(name = "indexandel")
 	private String indexandel;
 
-	@Size(max = 255)
 	@Column(name = "indexbasar")
 	private String indexbasar;
 
-	@Size(max = 255)
 	@Column(name = "indexbasmanad")
 	private String indexbasmanad;
 
-	@Size(max = 255)
 	@Column(name = "indexbasvarde")
 	private String indexbasvarde;
 
-	@Size(max = 255)
 	@Column(name = "index_nuvarande_ar")
 	private String indexNuvarandeAr;
 
-	@Size(max = 255)
 	@Column(name = "index_nuvarande_manad")
 	private String indexNuvarandeManad;
 
-	@Size(max = 255)
 	@Column(name = "index_nuvarande_varde")
 	private String indexNuvarandeVarde;
 
-	@Size(max = 255)
 	@Column(name = "radnummer")
 	private String radnummer;
 
-	@Size(max = 255)
-	@Column(name = "id")
-	private String id1;
-
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "arrendeartikel", referencedColumnName = "arrendeartikel")
-	private List<ArrendeartikelEntity> arrendeartikelEntities;
+	private List<ArrendeartikelEntity> arrendeartiklar;
 
-	public static ArrendekontraktsraderEntity create() {
-		return new ArrendekontraktsraderEntity();
+	public static ArrendekontraktsradEntity create() {
+		return new ArrendekontraktsradEntity();
 	}
 
 	public Long getId() {
@@ -114,7 +94,7 @@ public class ArrendekontraktsraderEntity {
 		this.id = id;
 	}
 
-	public ArrendekontraktsraderEntity withId(Long id) {
+	public ArrendekontraktsradEntity withId(Long id) {
 		this.id = id;
 		return this;
 	}
@@ -127,7 +107,7 @@ public class ArrendekontraktsraderEntity {
 		this.arrendekontrakt = arrendekontrakt;
 	}
 
-	public ArrendekontraktsraderEntity withArrendekontrakt(String arrendekontrakt) {
+	public ArrendekontraktsradEntity withArrendekontrakt(String arrendekontrakt) {
 		this.arrendekontrakt = arrendekontrakt;
 		return this;
 	}
@@ -140,7 +120,7 @@ public class ArrendekontraktsraderEntity {
 		this.arrendeartikel = arrendeartikel;
 	}
 
-	public ArrendekontraktsraderEntity withArrendeartikel(String arrendeartikel) {
+	public ArrendekontraktsradEntity withArrendeartikel(String arrendeartikel) {
 		this.arrendeartikel = arrendeartikel;
 		return this;
 	}
@@ -153,7 +133,7 @@ public class ArrendekontraktsraderEntity {
 		this.avitext = avitext;
 	}
 
-	public ArrendekontraktsraderEntity withAvitext(String avitext) {
+	public ArrendekontraktsradEntity withAvitext(String avitext) {
 		this.avitext = avitext;
 		return this;
 	}
@@ -166,7 +146,7 @@ public class ArrendekontraktsraderEntity {
 		this.debiterasFromDatum = debiterasFromDatum;
 	}
 
-	public ArrendekontraktsraderEntity withDebiterasFromDatum(OffsetDateTime debiterasFromDatum) {
+	public ArrendekontraktsradEntity withDebiterasFromDatum(OffsetDateTime debiterasFromDatum) {
 		this.debiterasFromDatum = debiterasFromDatum;
 		return this;
 	}
@@ -179,7 +159,7 @@ public class ArrendekontraktsraderEntity {
 		this.debiterasTomDatum = debiterasTomDatum;
 	}
 
-	public ArrendekontraktsraderEntity withDebiterasTomDatum(OffsetDateTime debiterasTomDatum) {
+	public ArrendekontraktsradEntity withDebiterasTomDatum(OffsetDateTime debiterasTomDatum) {
 		this.debiterasTomDatum = debiterasTomDatum;
 		return this;
 	}
@@ -192,7 +172,7 @@ public class ArrendekontraktsraderEntity {
 		this.basarshyra = basarshyra;
 	}
 
-	public ArrendekontraktsraderEntity withBasarshyra(String basarshyra) {
+	public ArrendekontraktsradEntity withBasarshyra(String basarshyra) {
 		this.basarshyra = basarshyra;
 		return this;
 	}
@@ -205,7 +185,7 @@ public class ArrendekontraktsraderEntity {
 		this.arshyra = arshyra;
 	}
 
-	public ArrendekontraktsraderEntity withArshyra(String arshyra) {
+	public ArrendekontraktsradEntity withArshyra(String arshyra) {
 		this.arshyra = arshyra;
 		return this;
 	}
@@ -218,7 +198,7 @@ public class ArrendekontraktsraderEntity {
 		this.delAvArFrom = delAvArFrom;
 	}
 
-	public ArrendekontraktsraderEntity withDelAvArFrom(OffsetDateTime delAvArFrom) {
+	public ArrendekontraktsradEntity withDelAvArFrom(OffsetDateTime delAvArFrom) {
 		this.delAvArFrom = delAvArFrom;
 		return this;
 	}
@@ -231,7 +211,7 @@ public class ArrendekontraktsraderEntity {
 		this.delAvArTom = delAvArTom;
 	}
 
-	public ArrendekontraktsraderEntity withDelAvArTom(OffsetDateTime delAvArTom) {
+	public ArrendekontraktsradEntity withDelAvArTom(OffsetDateTime delAvArTom) {
 		this.delAvArTom = delAvArTom;
 		return this;
 	}
@@ -244,7 +224,7 @@ public class ArrendekontraktsraderEntity {
 		this.indexklausul = indexklausul;
 	}
 
-	public ArrendekontraktsraderEntity withIndexklausul(String indexklausul) {
+	public ArrendekontraktsradEntity withIndexklausul(String indexklausul) {
 		this.indexklausul = indexklausul;
 		return this;
 	}
@@ -257,7 +237,7 @@ public class ArrendekontraktsraderEntity {
 		this.indexnamn = indexnamn;
 	}
 
-	public ArrendekontraktsraderEntity withIndexnamn(String indexnamn) {
+	public ArrendekontraktsradEntity withIndexnamn(String indexnamn) {
 		this.indexnamn = indexnamn;
 		return this;
 	}
@@ -270,7 +250,7 @@ public class ArrendekontraktsraderEntity {
 		this.indexandel = indexandel;
 	}
 
-	public ArrendekontraktsraderEntity withIndexandel(String indexandel) {
+	public ArrendekontraktsradEntity withIndexandel(String indexandel) {
 		this.indexandel = indexandel;
 		return this;
 	}
@@ -283,7 +263,7 @@ public class ArrendekontraktsraderEntity {
 		this.indexbasar = indexbasar;
 	}
 
-	public ArrendekontraktsraderEntity withIndexbasar(String indexbasar) {
+	public ArrendekontraktsradEntity withIndexbasar(String indexbasar) {
 		this.indexbasar = indexbasar;
 		return this;
 	}
@@ -296,7 +276,7 @@ public class ArrendekontraktsraderEntity {
 		this.indexbasmanad = indexbasmanad;
 	}
 
-	public ArrendekontraktsraderEntity withIndexbasmanad(String indexbasmanad) {
+	public ArrendekontraktsradEntity withIndexbasmanad(String indexbasmanad) {
 		this.indexbasmanad = indexbasmanad;
 		return this;
 	}
@@ -309,7 +289,7 @@ public class ArrendekontraktsraderEntity {
 		this.indexbasvarde = indexbasvarde;
 	}
 
-	public ArrendekontraktsraderEntity withIndexbasvarde(String indexbasvarde) {
+	public ArrendekontraktsradEntity withIndexbasvarde(String indexbasvarde) {
 		this.indexbasvarde = indexbasvarde;
 		return this;
 	}
@@ -322,7 +302,7 @@ public class ArrendekontraktsraderEntity {
 		this.indexNuvarandeAr = indexNuvarandeAr;
 	}
 
-	public ArrendekontraktsraderEntity withIndexNuvarandeAr(String indexNuvarandeAr) {
+	public ArrendekontraktsradEntity withIndexNuvarandeAr(String indexNuvarandeAr) {
 		this.indexNuvarandeAr = indexNuvarandeAr;
 		return this;
 	}
@@ -335,7 +315,7 @@ public class ArrendekontraktsraderEntity {
 		this.indexNuvarandeManad = indexNuvarandeManad;
 	}
 
-	public ArrendekontraktsraderEntity withIndexNuvarandeManad(String indexNuvarandeManad) {
+	public ArrendekontraktsradEntity withIndexNuvarandeManad(String indexNuvarandeManad) {
 		this.indexNuvarandeManad = indexNuvarandeManad;
 		return this;
 	}
@@ -348,7 +328,7 @@ public class ArrendekontraktsraderEntity {
 		this.indexNuvarandeVarde = indexNuvarandeVarde;
 	}
 
-	public ArrendekontraktsraderEntity withIndexNuvarandeVarde(String indexNuvarandeVarde) {
+	public ArrendekontraktsradEntity withIndexNuvarandeVarde(String indexNuvarandeVarde) {
 		this.indexNuvarandeVarde = indexNuvarandeVarde;
 		return this;
 	}
@@ -361,34 +341,21 @@ public class ArrendekontraktsraderEntity {
 		this.radnummer = radnummer;
 	}
 
-	public ArrendekontraktsraderEntity withRadnummer(String radnummer) {
+	public ArrendekontraktsradEntity withRadnummer(String radnummer) {
 		this.radnummer = radnummer;
 		return this;
 	}
 
-	public List<ArrendeartikelEntity> getArrendeartikelEntities() {
-		return arrendeartikelEntities;
+	public List<ArrendeartikelEntity> getArrendeartiklar() {
+		return arrendeartiklar;
 	}
 
-	public void setArrendeartikelEntities(List<ArrendeartikelEntity> arrendeartikelEntities) {
-		this.arrendeartikelEntities = arrendeartikelEntities;
+	public void setArrendeartiklar(List<ArrendeartikelEntity> arrendeartiklar) {
+		this.arrendeartiklar = arrendeartiklar;
 	}
 
-	public ArrendekontraktsraderEntity withArrendeartikelEntities(List<ArrendeartikelEntity> arrendeartikelEntities) {
-		this.arrendeartikelEntities = arrendeartikelEntities;
-		return this;
-	}
-
-	public String getId1() {
-		return id1;
-	}
-
-	public void setId1(String id1) {
-		this.id1 = id1;
-	}
-
-	public ArrendekontraktsraderEntity withId1(String id1) {
-		this.id1 = id1;
+	public ArrendekontraktsradEntity withArrendeartiklar(List<ArrendeartikelEntity> arrendeartiklar) {
+		this.arrendeartiklar = arrendeartiklar;
 		return this;
 	}
 
@@ -396,24 +363,24 @@ public class ArrendekontraktsraderEntity {
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
-		ArrendekontraktsraderEntity that = (ArrendekontraktsraderEntity) o;
+		ArrendekontraktsradEntity that = (ArrendekontraktsradEntity) o;
 		return Objects.equals(id, that.id) && Objects.equals(arrendekontrakt, that.arrendekontrakt) && Objects.equals(arrendeartikel, that.arrendeartikel) && Objects.equals(avitext, that.avitext)
 			&& Objects.equals(debiterasFromDatum, that.debiterasFromDatum) && Objects.equals(debiterasTomDatum, that.debiterasTomDatum) && Objects.equals(basarshyra, that.basarshyra) && Objects.equals(arshyra,
 				that.arshyra) && Objects.equals(delAvArFrom, that.delAvArFrom) && Objects.equals(delAvArTom, that.delAvArTom) && Objects.equals(indexklausul, that.indexklausul) && Objects.equals(indexnamn, that.indexnamn)
 			&& Objects.equals(indexandel, that.indexandel) && Objects.equals(indexbasar, that.indexbasar) && Objects.equals(indexbasmanad, that.indexbasmanad) && Objects.equals(indexbasvarde, that.indexbasvarde)
 			&& Objects.equals(indexNuvarandeAr, that.indexNuvarandeAr) && Objects.equals(indexNuvarandeManad, that.indexNuvarandeManad) && Objects.equals(indexNuvarandeVarde, that.indexNuvarandeVarde) && Objects.equals(
-				radnummer, that.radnummer) && Objects.equals(id1, that.id1) && Objects.equals(arrendeartikelEntities, that.arrendeartikelEntities);
+				radnummer, that.radnummer) && Objects.equals(arrendeartiklar, that.arrendeartiklar);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, arrendekontrakt, arrendeartikel, avitext, debiterasFromDatum, debiterasTomDatum, basarshyra, arshyra, delAvArFrom, delAvArTom, indexklausul, indexnamn, indexandel, indexbasar, indexbasmanad, indexbasvarde, indexNuvarandeAr,
-			indexNuvarandeManad, indexNuvarandeVarde, radnummer, id1, arrendeartikelEntities);
+			indexNuvarandeManad, indexNuvarandeVarde, radnummer, arrendeartiklar);
 	}
 
 	@Override
 	public String toString() {
-		return "ArrendekontraktsraderEntity{" +
+		return "ArrendekontraktsradEntity{" +
 			"id=" + id +
 			", arrendekontrakt='" + arrendekontrakt + '\'' +
 			", arrendeartikel='" + arrendeartikel + '\'' +
@@ -434,8 +401,7 @@ public class ArrendekontraktsraderEntity {
 			", indexNuvarandeManad='" + indexNuvarandeManad + '\'' +
 			", indexNuvarandeVarde='" + indexNuvarandeVarde + '\'' +
 			", radnummer='" + radnummer + '\'' +
-			", id1='" + id1 + '\'' +
-			", arrendeartikelEntities=" + arrendeartikelEntities +
+			", arrendeartiklar=" + arrendeartiklar +
 			'}';
 	}
 }

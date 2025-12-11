@@ -17,7 +17,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ArrendekontraktsraderEntityTest {
+class ArrendekontraktsradEntityTest {
 
 	@BeforeAll
 	static void setup() {
@@ -26,7 +26,7 @@ class ArrendekontraktsraderEntityTest {
 
 	@Test
 	void testBean() {
-		MatcherAssert.assertThat(ArrendekontraktsraderEntity.class, allOf(
+		MatcherAssert.assertThat(ArrendekontraktsradEntity.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -58,9 +58,8 @@ class ArrendekontraktsraderEntityTest {
 		final var indexNuvarandeVarde = "indexNuvarandeVarde";
 		final var radnummer = "radnummer";
 		final var arrendeartikelEntities = List.of(new ArrendeartikelEntity());
-		final var id1 = "id1";
 
-		var arrendekontraktsraderEntity = ArrendekontraktsraderEntity.create()
+		var arrendekontraktsraderEntity = ArrendekontraktsradEntity.create()
 			.withId(id)
 			.withArrendekontrakt(arrendekontrakt)
 			.withArrendeartikel(arrendeartikel)
@@ -81,8 +80,7 @@ class ArrendekontraktsraderEntityTest {
 			.withIndexNuvarandeManad(indexNuvarandeManad)
 			.withIndexNuvarandeVarde(indexNuvarandeVarde)
 			.withRadnummer(radnummer)
-			.withArrendeartikelEntities(arrendeartikelEntities)
-			.withId1(id1);
+			.withArrendeartiklar(arrendeartikelEntities);
 
 		assertThat(arrendekontraktsraderEntity).hasNoNullFieldsOrProperties();
 		assertThat(arrendekontraktsraderEntity.getId()).isEqualTo(id);
@@ -105,13 +103,12 @@ class ArrendekontraktsraderEntityTest {
 		assertThat(arrendekontraktsraderEntity.getIndexNuvarandeManad()).isEqualTo(indexNuvarandeManad);
 		assertThat(arrendekontraktsraderEntity.getIndexNuvarandeVarde()).isEqualTo(indexNuvarandeVarde);
 		assertThat(arrendekontraktsraderEntity.getRadnummer()).isEqualTo(radnummer);
-		assertThat(arrendekontraktsraderEntity.getArrendeartikelEntities()).isEqualTo(arrendeartikelEntities);
-		assertThat(arrendekontraktsraderEntity.getId1()).isEqualTo(id1);
+		assertThat(arrendekontraktsraderEntity.getArrendeartiklar()).isEqualTo(arrendeartikelEntities);
 	}
 
 	@Test
 	void hasNoDirtOnCreatedBean() {
-		assertThat(ArrendekontraktsraderEntity.create()).hasAllNullFieldsOrProperties();
-		assertThat(new ArrendekontraktsraderEntity()).hasAllNullFieldsOrProperties();
+		assertThat(ArrendekontraktsradEntity.create()).hasAllNullFieldsOrProperties();
+		assertThat(new ArrendekontraktsradEntity()).hasAllNullFieldsOrProperties();
 	}
 }
