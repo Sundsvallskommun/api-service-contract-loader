@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import java.util.Objects;
 
 @Entity
-@Table(name = "gemensamt_notering", schema = "contract_staging")
+@Table(name = "gemensamt_notering")
 public class NoteringEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "arrende_arrendekontrakt", schema = "contract_staging")
+@Table(name = "arrende_arrendekontrakt")
 public class ArrendekontraktEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
