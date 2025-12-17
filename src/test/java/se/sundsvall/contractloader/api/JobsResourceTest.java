@@ -1,18 +1,24 @@
 package se.sundsvall.contractloader.api;
 
+import static org.mockito.Mockito.verify;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import se.sundsvall.contractloader.service.ExportService;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("junit")
 class JobsResourceTest {
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String PATH = "/" + MUNICIPALITY_ID + "/jobs";
+
+	@MockitoBean
+	private ExportService exportServiceMock;
 
 	@Autowired
 	private WebTestClient webTestClient;
@@ -25,7 +31,7 @@ class JobsResourceTest {
 			.exchange()
 			.expectStatus().isNoContent();
 
-		// TODO: Add verifications when service method is implemented
+		verify(exportServiceMock).export();
 	}
 
 	@Test

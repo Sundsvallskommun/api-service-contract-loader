@@ -1,5 +1,7 @@
 package se.sundsvall.contractloader.service.provider;
 
+import static generated.se.sundsvall.contract.AddressType.POSTAL_ADDRESS;
+import static generated.se.sundsvall.contract.ContractType.LEASE_AGREEMENT;
 import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
 import static generated.se.sundsvall.contract.LeaseType.OTHER_FEE;
 import static generated.se.sundsvall.contract.Party.LESSEE;
@@ -36,6 +38,7 @@ import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_ID;
 import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_NAME;
 import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_ORGANIZATION_NUMBER;
 import static se.sundsvall.contractloader.service.Constants.ORDERING_FIRST;
+import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EXTENSION_DISPLAY;
 import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EXTENSION_KEY;
 import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EXTENSION_VALUE;
 import static se.sundsvall.contractloader.service.Constants.SEK_CURRENCY;
@@ -44,9 +47,7 @@ import static se.sundsvall.contractloader.service.Constants.intervalTypeMapping;
 import static se.sundsvall.contractloader.service.Constants.stakeholderTypeMapping;
 
 import generated.se.sundsvall.contract.Address;
-import generated.se.sundsvall.contract.AddressType;
 import generated.se.sundsvall.contract.Contract;
-import generated.se.sundsvall.contract.ContractType;
 import generated.se.sundsvall.contract.Duration;
 import generated.se.sundsvall.contract.Extension;
 import generated.se.sundsvall.contract.ExtraParameterGroup;
@@ -102,7 +103,7 @@ public final class ContractProvider {
 				.externalReferenceId(entity.getArrendekontrakt())
 				.leaseType(toLeaseType(entity.getKontraktstyp()))
 				.status(toStatus(entity))
-				.type(ContractType.LEASE_AGREEMENT)
+				.type(LEASE_AGREEMENT)
 				.extraParameters(toExtraParameterGroups(entity))
 				.stakeholders(toStakeholders(entity.getArrendatorer()))
 				.propertyDesignations(getPropertyDesignations(entity.getFastigheter()))
@@ -271,10 +272,12 @@ public final class ContractProvider {
 			.organizationName(MUNICIPALITY_NAME)
 			.organizationNumber(MUNICIPALITY_ORGANIZATION_NUMBER)
 			.address(new Address()
+				.type(POSTAL_ADDRESS)
 				.postalCode(Constants.MUNICIPALITY_POSTAL_CODE)
 				.town(Constants.MUNICIPALITY_TOWN))
 			.parameters(List.of(new Parameter()
 				.key(ORGANIZATION_NAME_EXTENSION_KEY)
+				.displayName(ORGANIZATION_NAME_EXTENSION_DISPLAY)
 				.addValuesItem(ORGANIZATION_NAME_EXTENSION_VALUE)));
 	}
 
@@ -289,11 +292,11 @@ public final class ContractProvider {
 			.firstName(arrendatorEntity.getFornamn())
 			.lastName(arrendatorEntity.getEfternamn())
 			.address(new Address()
-				.type(AddressType.POSTAL_ADDRESS)
+				.type(POSTAL_ADDRESS)
 				.careOf(arrendatorEntity.getAvdelning())
 				.postalCode(arrendatorEntity.getPostnummer())
 				.streetAddress(getStreetAddress(arrendatorEntity))
-				.town(arrendatorEntity.getPostnummer())
+				.town(arrendatorEntity.getOrt())
 				.country(arrendatorEntity.getLand()));
 
 	}

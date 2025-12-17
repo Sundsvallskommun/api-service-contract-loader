@@ -32,7 +32,6 @@ class JobsResource {
 
 	public JobsResource(final ExportService exportService) {
 		this.exportService = exportService;
-		// TODO: Inject services when implemented
 	}
 
 	@PostMapping(path = "/exporter")

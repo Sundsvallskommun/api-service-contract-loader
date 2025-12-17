@@ -83,6 +83,7 @@ public final class Constants {
 	public static final String MUNICIPALITY_TOWN = "Sundsvall";
 	public static final String ORGANIZATION_NAME_EXTENSION_KEY = "organizationNameExtension";
 	public static final String ORGANIZATION_NAME_EXTENSION_VALUE = "Stadsbyggnadsnämnden";
+	public static final String ORGANIZATION_NAME_EXTENSION_DISPLAY = "Enhet";
 
 	public static final String COMPANY_KEY = "Företag";
 	public static final String MUNICIPALITY_KEY = "Kommunal";

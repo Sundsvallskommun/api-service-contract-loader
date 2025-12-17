@@ -35,9 +35,7 @@ public class ExportService {
 			pageResult.forEach(contract -> {
 				try {
 					contractClient.createContract(MUNICIPALITY_ID, contractProvider.toContract(contract));
-					// TODO Add success status
 				} catch (Exception _) {
-					// TODO Add failure status
 					LOGGER.error("Something went wrong for contract: {}", contract.getArrendekontrakt());
 				}
 			});
