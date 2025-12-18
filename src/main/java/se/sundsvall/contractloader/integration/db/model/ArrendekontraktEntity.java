@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,31 +28,31 @@ public class ArrendekontraktEntity {
 	private String hyresid;
 
 	@Column(name = "kontraktsdatum")
-	private OffsetDateTime kontraktsdatum;
+	private LocalDate kontraktsdatum;
 
 	@Column(name = "fr_o_m_datum")
-	private OffsetDateTime fromDatum;
+	private LocalDate fromDatum;
 
 	@Column(name = "t_o_m_datum")
-	private OffsetDateTime tomDatum;
+	private LocalDate tomDatum;
 
 	@Column(name = "sista_debiteringsdatum")
-	private OffsetDateTime sistaDebiteringsdatum;
+	private LocalDate sistaDebiteringsdatum;
 
 	@Column(name = "godkant_datum")
-	private OffsetDateTime godkantDatum;
+	private LocalDate godkantDatum;
 
 	@Column(name = "uppsagt_datum")
-	private OffsetDateTime uppsagtDatum;
+	private LocalDate uppsagtDatum;
 
 	@Column(name = "uppsagt_av")
 	private String uppsagtAv;
 
 	@Column(name = "preliminart_uppsagt_datum")
-	private OffsetDateTime preliminartUppsagtDatum;
+	private LocalDate preliminartUppsagtDatum;
 
 	@Column(name = "onskad_avflyttning")
-	private OffsetDateTime onskadAvflyttning;
+	private LocalDate onskadAvflyttning;
 
 	@Column(name = "kontraktstyp")
 	private String kontraktstyp;
@@ -154,80 +154,80 @@ public class ArrendekontraktEntity {
 		return this;
 	}
 
-	public OffsetDateTime getKontraktsdatum() {
+	public LocalDate getKontraktsdatum() {
 		return kontraktsdatum;
 	}
 
-	public void setKontraktsdatum(OffsetDateTime kontraktsdatum) {
+	public void setKontraktsdatum(LocalDate kontraktsdatum) {
 		this.kontraktsdatum = kontraktsdatum;
 	}
 
-	public ArrendekontraktEntity withKontraktsdatum(OffsetDateTime kontraktsdatum) {
+	public ArrendekontraktEntity withKontraktsdatum(LocalDate kontraktsdatum) {
 		this.kontraktsdatum = kontraktsdatum;
 		return this;
 	}
 
-	public OffsetDateTime getFromDatum() {
+	public LocalDate getFromDatum() {
 		return fromDatum;
 	}
 
-	public void setFromDatum(OffsetDateTime fromDatum) {
+	public void setFromDatum(LocalDate fromDatum) {
 		this.fromDatum = fromDatum;
 	}
 
-	public ArrendekontraktEntity withFromDatum(OffsetDateTime fromDatum) {
+	public ArrendekontraktEntity withFromDatum(LocalDate fromDatum) {
 		this.fromDatum = fromDatum;
 		return this;
 	}
 
-	public OffsetDateTime getTomDatum() {
+	public LocalDate getTomDatum() {
 		return tomDatum;
 	}
 
-	public void setTomDatum(OffsetDateTime tomDatum) {
+	public void setTomDatum(LocalDate tomDatum) {
 		this.tomDatum = tomDatum;
 	}
 
-	public ArrendekontraktEntity withTomDatum(OffsetDateTime tomDatum) {
+	public ArrendekontraktEntity withTomDatum(LocalDate tomDatum) {
 		this.tomDatum = tomDatum;
 		return this;
 	}
 
-	public OffsetDateTime getSistaDebiteringsdatum() {
+	public LocalDate getSistaDebiteringsdatum() {
 		return sistaDebiteringsdatum;
 	}
 
-	public void setSistaDebiteringsdatum(OffsetDateTime sistaDebiteringsdatum) {
+	public void setSistaDebiteringsdatum(LocalDate sistaDebiteringsdatum) {
 		this.sistaDebiteringsdatum = sistaDebiteringsdatum;
 	}
 
-	public ArrendekontraktEntity withSistaDebiteringsdatum(OffsetDateTime sistaDebiteringsdatum) {
+	public ArrendekontraktEntity withSistaDebiteringsdatum(LocalDate sistaDebiteringsdatum) {
 		this.sistaDebiteringsdatum = sistaDebiteringsdatum;
 		return this;
 	}
 
-	public OffsetDateTime getGodkantDatum() {
+	public LocalDate getGodkantDatum() {
 		return godkantDatum;
 	}
 
-	public void setGodkantDatum(OffsetDateTime godkantDatum) {
+	public void setGodkantDatum(LocalDate godkantDatum) {
 		this.godkantDatum = godkantDatum;
 	}
 
-	public ArrendekontraktEntity withGodkantDatum(OffsetDateTime godkantDatum) {
+	public ArrendekontraktEntity withGodkantDatum(LocalDate godkantDatum) {
 		this.godkantDatum = godkantDatum;
 		return this;
 	}
 
-	public OffsetDateTime getUppsagtDatum() {
+	public LocalDate getUppsagtDatum() {
 		return uppsagtDatum;
 	}
 
-	public void setUppsagtDatum(OffsetDateTime uppsagtDatum) {
+	public void setUppsagtDatum(LocalDate uppsagtDatum) {
 		this.uppsagtDatum = uppsagtDatum;
 	}
 
-	public ArrendekontraktEntity withUppsagtDatum(OffsetDateTime uppsagtDatum) {
+	public ArrendekontraktEntity withUppsagtDatum(LocalDate uppsagtDatum) {
 		this.uppsagtDatum = uppsagtDatum;
 		return this;
 	}
@@ -245,28 +245,28 @@ public class ArrendekontraktEntity {
 		return this;
 	}
 
-	public OffsetDateTime getPreliminartUppsagtDatum() {
+	public LocalDate getPreliminartUppsagtDatum() {
 		return preliminartUppsagtDatum;
 	}
 
-	public void setPreliminartUppsagtDatum(OffsetDateTime preliminartUppsagtDatum) {
+	public void setPreliminartUppsagtDatum(LocalDate preliminartUppsagtDatum) {
 		this.preliminartUppsagtDatum = preliminartUppsagtDatum;
 	}
 
-	public ArrendekontraktEntity withPreliminartUppsagtDatum(OffsetDateTime preliminartUppsagtDatum) {
+	public ArrendekontraktEntity withPreliminartUppsagtDatum(LocalDate preliminartUppsagtDatum) {
 		this.preliminartUppsagtDatum = preliminartUppsagtDatum;
 		return this;
 	}
 
-	public OffsetDateTime getOnskadAvflyttning() {
+	public LocalDate getOnskadAvflyttning() {
 		return onskadAvflyttning;
 	}
 
-	public void setOnskadAvflyttning(OffsetDateTime onskadAvflyttning) {
+	public void setOnskadAvflyttning(LocalDate onskadAvflyttning) {
 		this.onskadAvflyttning = onskadAvflyttning;
 	}
 
-	public ArrendekontraktEntity withOnskadAvflyttning(OffsetDateTime onskadAvflyttning) {
+	public ArrendekontraktEntity withOnskadAvflyttning(LocalDate onskadAvflyttning) {
 		this.onskadAvflyttning = onskadAvflyttning;
 		return this;
 	}

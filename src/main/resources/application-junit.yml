@@ -29,12 +29,8 @@ integration:
     token-uri: token.uri
     client-id: the-client-id
     client-secret: the-client-secret
-    connectTimeout: 10
-    readTimeout: 20
   contract:
     url: contract.url
     token-uri: token.uri
     client-id: the-client-id
     client-secret: the-client-secret
-    connectTimeout: 10
-    readTimeout: 20

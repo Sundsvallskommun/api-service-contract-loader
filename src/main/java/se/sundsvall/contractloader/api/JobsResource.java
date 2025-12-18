@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
+import se.sundsvall.contractloader.service.ExportService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
 @RestController
@@ -27,8 +28,10 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @RequestMapping("/{municipalityId}/jobs")
 class JobsResource {
 
-	public JobsResource() {
-		// TODO: Inject services when implemented
+	private final ExportService exportService;
+
+	public JobsResource(final ExportService exportService) {
+		this.exportService = exportService;
 	}
 
 	@PostMapping(path = "/exporter")
@@ -40,7 +43,7 @@ class JobsResource {
 		@ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	})
 	ResponseEntity<Void> exporter(@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @PathVariable @ValidMunicipalityId final String municipalityId) {
-		// TODO: Add service call
+		exportService.export();
 		return noContent()
 			.header(CONTENT_TYPE, ALL_VALUE)
 			.build();

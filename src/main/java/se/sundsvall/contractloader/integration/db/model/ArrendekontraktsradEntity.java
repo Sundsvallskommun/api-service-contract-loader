@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,10 +31,10 @@ public class ArrendekontraktsradEntity {
 	private String avitext;
 
 	@Column(name = "debiteras_fr_o_m_datum")
-	private OffsetDateTime debiterasFromDatum;
+	private LocalDate debiterasFromDatum;
 
 	@Column(name = "debiteras_t_o_m_datum")
-	private OffsetDateTime debiterasTomDatum;
+	private LocalDate debiterasTomDatum;
 
 	@Column(name = "basarshyra")
 	private String basarshyra;
@@ -43,10 +43,10 @@ public class ArrendekontraktsradEntity {
 	private String arshyra;
 
 	@Column(name = "del_av_ar_fr_o_m")
-	private OffsetDateTime delAvArFrom;
+	private LocalDate delAvArFrom;
 
 	@Column(name = "del_av_ar_t_o_m")
-	private OffsetDateTime delAvArTom;
+	private LocalDate delAvArTom;
 
 	@Column(name = "indexklausul")
 	private String indexklausul;
@@ -138,28 +138,28 @@ public class ArrendekontraktsradEntity {
 		return this;
 	}
 
-	public OffsetDateTime getDebiterasFromDatum() {
+	public LocalDate getDebiterasFromDatum() {
 		return debiterasFromDatum;
 	}
 
-	public void setDebiterasFromDatum(OffsetDateTime debiterasFromDatum) {
+	public void setDebiterasFromDatum(LocalDate debiterasFromDatum) {
 		this.debiterasFromDatum = debiterasFromDatum;
 	}
 
-	public ArrendekontraktsradEntity withDebiterasFromDatum(OffsetDateTime debiterasFromDatum) {
+	public ArrendekontraktsradEntity withDebiterasFromDatum(LocalDate debiterasFromDatum) {
 		this.debiterasFromDatum = debiterasFromDatum;
 		return this;
 	}
 
-	public OffsetDateTime getDebiterasTomDatum() {
+	public LocalDate getDebiterasTomDatum() {
 		return debiterasTomDatum;
 	}
 
-	public void setDebiterasTomDatum(OffsetDateTime debiterasTomDatum) {
+	public void setDebiterasTomDatum(LocalDate debiterasTomDatum) {
 		this.debiterasTomDatum = debiterasTomDatum;
 	}
 
-	public ArrendekontraktsradEntity withDebiterasTomDatum(OffsetDateTime debiterasTomDatum) {
+	public ArrendekontraktsradEntity withDebiterasTomDatum(LocalDate debiterasTomDatum) {
 		this.debiterasTomDatum = debiterasTomDatum;
 		return this;
 	}
@@ -190,28 +190,28 @@ public class ArrendekontraktsradEntity {
 		return this;
 	}
 
-	public OffsetDateTime getDelAvArFrom() {
+	public LocalDate getDelAvArFrom() {
 		return delAvArFrom;
 	}
 
-	public void setDelAvArFrom(OffsetDateTime delAvArFrom) {
+	public void setDelAvArFrom(LocalDate delAvArFrom) {
 		this.delAvArFrom = delAvArFrom;
 	}
 
-	public ArrendekontraktsradEntity withDelAvArFrom(OffsetDateTime delAvArFrom) {
+	public ArrendekontraktsradEntity withDelAvArFrom(LocalDate delAvArFrom) {
 		this.delAvArFrom = delAvArFrom;
 		return this;
 	}
 
-	public OffsetDateTime getDelAvArTom() {
+	public LocalDate getDelAvArTom() {
 		return delAvArTom;
 	}
 
-	public void setDelAvArTom(OffsetDateTime delAvArTom) {
+	public void setDelAvArTom(LocalDate delAvArTom) {
 		this.delAvArTom = delAvArTom;
 	}
 
-	public ArrendekontraktsradEntity withDelAvArTom(OffsetDateTime delAvArTom) {
+	public ArrendekontraktsradEntity withDelAvArTom(LocalDate delAvArTom) {
 		this.delAvArTom = delAvArTom;
 		return this;
 	}

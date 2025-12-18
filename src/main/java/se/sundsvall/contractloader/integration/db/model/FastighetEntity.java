@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,7 +46,7 @@ public class FastighetEntity {
 	private String block;
 
 	@Column(name = "fangesdatum")
-	private OffsetDateTime fangesdatum;
+	private LocalDate fangesdatum;
 
 	@Column(name = "agarforhallande")
 	private String agarforhallande;
@@ -212,15 +212,15 @@ public class FastighetEntity {
 		return this;
 	}
 
-	public OffsetDateTime getFangesdatum() {
+	public LocalDate getFangesdatum() {
 		return fangesdatum;
 	}
 
-	public void setFangesdatum(OffsetDateTime fangesdatum) {
+	public void setFangesdatum(LocalDate fangesdatum) {
 		this.fangesdatum = fangesdatum;
 	}
 
-	public FastighetEntity withFangesdatum(OffsetDateTime fangesdatum) {
+	public FastighetEntity withFangesdatum(LocalDate fangesdatum) {
 		this.fangesdatum = fangesdatum;
 		return this;
 	}

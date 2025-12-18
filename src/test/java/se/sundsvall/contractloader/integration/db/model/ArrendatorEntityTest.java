@@ -5,12 +5,12 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanHashCode;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanToString;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
-import static java.time.OffsetDateTime.now;
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.allOf;
 
 import com.google.code.beanmatchers.BeanMatchers;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.Random;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,7 +20,7 @@ class ArrendatorEntityTest {
 
 	@BeforeAll
 	static void setup() {
-		BeanMatchers.registerValueGenerator(() -> now().plusDays(new Random().nextInt()), OffsetDateTime.class);
+		BeanMatchers.registerValueGenerator(() -> now().plusDays(new Random().nextInt()), LocalDate.class);
 	}
 
 	@Test
@@ -46,8 +46,8 @@ class ArrendatorEntityTest {
 		final var efternamn = "efternamn";
 		final var avdelning = "avdelning";
 		final var kontraktsrelation = "kontraktsrelation";
-		final var relateradFromDatum = OffsetDateTime.now();
-		final var relateradTomDatum = OffsetDateTime.now();
+		final var relateradFromDatum = LocalDate.now();
+		final var relateradTomDatum = LocalDate.now();
 		final var ordning = "ordning";
 		final var postadress = "postadress";
 		final var postadress2 = "postadress2";
