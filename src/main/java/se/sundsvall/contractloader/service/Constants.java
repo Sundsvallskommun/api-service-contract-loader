@@ -78,7 +78,7 @@ public final class Constants {
 		Map.entry(JORDBRUKSARRENDE, "Avgift, jordbruksarrende"));
 
 	public static final String MUNICIPALITY_NAME = "Sundsvalls kommun";
-	public static final String MUNICIPALITY_ORGANIZATION_NUMBER = "212000-2411";
+	public static final String MUNICIPALITY_PARTY_ID = "change-me";
 	public static final String MUNICIPALITY_POSTAL_CODE = "851 85";
 	public static final String MUNICIPALITY_TOWN = "Sundsvall";
 	public static final String ORGANIZATION_NAME_EXTENSION_KEY = "organizationNameExtension";

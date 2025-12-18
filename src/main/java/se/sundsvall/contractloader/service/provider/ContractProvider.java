@@ -16,6 +16,7 @@ import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.zalando.problem.Status.PRECONDITION_FAILED;
 import static se.sundsvall.contractloader.service.Constants.CATEGORY_PERSON;
@@ -36,7 +37,7 @@ import static se.sundsvall.contractloader.service.Constants.INVOICE_INFO_GROUP_N
 import static se.sundsvall.contractloader.service.Constants.INVOICE_INFO_MARKUP_PARAMETER;
 import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_ID;
 import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_NAME;
-import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_ORGANIZATION_NUMBER;
+import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_PARTY_ID;
 import static se.sundsvall.contractloader.service.Constants.ORDERING_FIRST;
 import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EXTENSION_DISPLAY;
 import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EXTENSION_KEY;
@@ -133,14 +134,16 @@ public final class ContractProvider {
 
 	private Invoicing toInvoicing(final ArrendekontraktEntity arrendekontraktEntity) {
 		return ofNullable(arrendekontraktEntity)
-			.map(entity -> new Invoicing()
-				.invoiceInterval(intervalTypeMapping.get(entity.getFakturaperiod()))
+			.map(ArrendekontraktEntity::getFakturaperiod)
+			.filter(not(String::isBlank))
+			.map(period -> new Invoicing()
+				.invoiceInterval(intervalTypeMapping.get(period))
 				.invoicedIn(ADVANCE)).orElse(null);
 	}
 
 	private Extension toExtension(final ArrendekontraktEntity arrendekontraktEntity) {
 		final var extension = arrendekontraktEntity.getForlangning();
-		final var autoExtend = isNotEmpty(extension) && this.toInteger(extension) > 0;
+		final var autoExtend = isNotBlank(extension) && this.toInteger(extension) > 0;
 		final var leaseExtension = ofNullable(extension).map(this::toInteger).orElse(null);
 		final var unit = ofNullable(arrendekontraktEntity.getEnhetForlangning())
 			// There are only "månad" and "år" in the data
@@ -194,9 +197,11 @@ public final class ContractProvider {
 			return Collections.emptyList();
 		}
 		return fastighetEntities.stream()
-			.map(entity -> new PropertyDesignation()
-				.name(entity.getFastighetsbeteckning()))
 			.filter(Objects::nonNull)
+			.map(FastighetEntity::getFastighetsbeteckning)
+			.filter(not(String::isBlank))
+			.map(fastighetsbeteckning -> new PropertyDesignation()
+				.name(fastighetsbeteckning))
 			.toList();
 	}
 
@@ -218,8 +223,8 @@ public final class ContractProvider {
 			.max(Comparator.comparing(ArrendekontraktsradEntity::getDebiterasFromDatum))
 			.map(ArrendekontraktsradEntity::getAvitext);
 
-		ofNullable(arrendekontraktEntity.getMarkning()).ifPresent(marking -> parameters.put(INVOICE_INFO_MARKUP_PARAMETER, marking));
-		article.ifPresent(article1 -> parameters.put(INVOICE_INFO_ARTICLE_PARAMETER, article1));
+		ofNullable(arrendekontraktEntity.getMarkning()).filter(not(String::isBlank)).ifPresent(marking -> parameters.put(INVOICE_INFO_MARKUP_PARAMETER, marking));
+		article.filter(not(String::isBlank)).ifPresent(article1 -> parameters.put(INVOICE_INFO_ARTICLE_PARAMETER, article1));
 
 		return new ExtraParameterGroup()
 			.name(INVOICE_INFO_GROUP_NAME)
@@ -231,21 +236,21 @@ public final class ContractProvider {
 
 		final var fileName = ofNullable(arrendekontraktEntity.getFastigheter()).orElse(emptyList()).stream()
 			.map(FastighetEntity::getNoteringar)
-			.filter(Objects::nonNull)
 			.flatMap(List::stream)
 			.filter(Objects::nonNull)
 			.map(NoteringEntity::getFilnamn)
+			.filter(not(String::isBlank))
 			.findFirst();
 
 		parameters.put(CONTRACT_DETAILS_MIGRATED_FROM_PARAMETER, CONTRACT_DETAILS_MIGRATED_FROM_VALUE);
-		ofNullable(arrendekontraktEntity.getArrendekontrakt()).ifPresent(contractNumber -> parameters.put(CONTRACT_DETAILS_CONTRACT_NUMBER_PARAMETER, contractNumber));
-		ofNullable(arrendekontraktEntity.getKontraktsnamn()).ifPresent(contractName -> parameters.put(CONTRACT_DETAILS_CONTRACT_NAME_PARAMETER, contractName));
-		ofNullable(arrendekontraktEntity.getHuvudkontrakt()).ifPresent(mainContractReference -> parameters.put(CONTRACT_DETAILS_MAIN_CONTRACT_REFERENCE_PARAMETER, mainContractReference));
+		ofNullable(arrendekontraktEntity.getArrendekontrakt()).filter(not(String::isBlank)).ifPresent(contractNumber -> parameters.put(CONTRACT_DETAILS_CONTRACT_NUMBER_PARAMETER, contractNumber));
+		ofNullable(arrendekontraktEntity.getKontraktsnamn()).filter(not(String::isBlank)).ifPresent(contractName -> parameters.put(CONTRACT_DETAILS_CONTRACT_NAME_PARAMETER, contractName));
+		ofNullable(arrendekontraktEntity.getHuvudkontrakt()).filter(not(String::isBlank)).ifPresent(mainContractReference -> parameters.put(CONTRACT_DETAILS_MAIN_CONTRACT_REFERENCE_PARAMETER, mainContractReference));
 		ofNullable(arrendekontraktEntity.getKontraktsdatum()).ifPresent(contractDate -> parameters.put(CONTRACT_DETAILS_CONTRACT_DATE_PARAMETER, contractDate.format(DATE_FORMAT)));
 		ofNullable(arrendekontraktEntity.getSistaDebiteringsdatum()).ifPresent(finalBillingDate -> parameters.put(CONTRACT_DETAILS_FINAL_BILLING_DATE_PARAMETER, finalBillingDate.format(DATE_FORMAT)));
 		ofNullable(arrendekontraktEntity.getUppsagtDatum()).ifPresent(terminationDate -> parameters.put(CONTRACT_DETAILS_TERMINATION_DATE_PARAMETER, terminationDate.format(DATE_FORMAT)));
-		ofNullable(arrendekontraktEntity.getUppsagtAv()).ifPresent(terminatedBy -> parameters.put(CONTRACT_DETAILS_TERMINATED_BY_PARAMETER, terminatedBy));
-		ofNullable(arrendekontraktEntity.getKontraktstyp()).ifPresent(contractType -> parameters.put(CONTRACT_DETAILS_ORIGINAL_CONTRACT_TYPE_PARAMETER, contractType));
+		ofNullable(arrendekontraktEntity.getUppsagtAv()).filter(not(String::isBlank)).ifPresent(terminatedBy -> parameters.put(CONTRACT_DETAILS_TERMINATED_BY_PARAMETER, terminatedBy));
+		ofNullable(arrendekontraktEntity.getKontraktstyp()).filter(not(String::isBlank)).ifPresent(contractType -> parameters.put(CONTRACT_DETAILS_ORIGINAL_CONTRACT_TYPE_PARAMETER, contractType));
 		fileName.ifPresent(file -> parameters.put(CONTRACT_DETAILS_ORIGINAL_FILE_PARAMETER, file));
 
 		return new ExtraParameterGroup()
@@ -270,7 +275,7 @@ public final class ContractProvider {
 			.roles(List.of(StakeholderRole.LESSOR))
 			.type(MUNICIPALITY)
 			.organizationName(MUNICIPALITY_NAME)
-			.organizationNumber(MUNICIPALITY_ORGANIZATION_NUMBER)
+			.partyId(MUNICIPALITY_PARTY_ID)
 			.address(new Address()
 				.type(POSTAL_ADDRESS)
 				.postalCode(Constants.MUNICIPALITY_POSTAL_CODE)
@@ -314,18 +319,18 @@ public final class ContractProvider {
 		final var workNumber = ofNullable(arrendatorEntity.getTelefonArbete()).orElse("");
 
 		var phoneNumber = "";
-		if (!mobileNumber.isEmpty()) {
+		if (!mobileNumber.isBlank()) {
 			phoneNumber = mobileNumber;
 		}
-		if (!homeNumber.isEmpty()) {
-			if (!phoneNumber.isEmpty()) {
+		if (!homeNumber.isBlank()) {
+			if (!phoneNumber.isBlank()) {
 				phoneNumber = phoneNumber.concat(", " + homeNumber);
 			} else {
 				phoneNumber = homeNumber;
 			}
 		}
-		if (!workNumber.isEmpty()) {
-			if (!phoneNumber.isEmpty()) {
+		if (!workNumber.isBlank()) {
+			if (!phoneNumber.isBlank()) {
 				phoneNumber = phoneNumber.concat(", " + workNumber);
 			} else {
 				phoneNumber = workNumber;
@@ -350,6 +355,7 @@ public final class ContractProvider {
 		return ofNullable(arrendatorEntity.getKategori())
 			.filter(not(CATEGORY_PERSON::equals))
 			.map(category -> arrendatorEntity.getNamn())
+			.filter(not(String::isBlank))
 			.orElse(null);
 	}
 
@@ -387,7 +393,7 @@ public final class ContractProvider {
 				.currency(SEK_CURRENCY)
 				.yearly(toBigDecimal(row.getBasarshyra()))
 				.total(toBigDecimal(row.getBasarshyra()))
-				.indexType(row.getIndexnamn())
+				.indexType(ofNullable(row.getIndexnamn()).filter(not(String::isBlank)).orElse(null))
 				.indexYear(ofNullable(row.getIndexbasar()).map(this::toInteger).orElse(null))
 				.indexNumber(ofNullable(row.getIndexbasvarde()).map(this::toInteger).orElse(null))
 				.indexationRate(getIndexationRate(row))
@@ -428,6 +434,9 @@ public final class ContractProvider {
 	}
 
 	private BigDecimal toBigDecimal(String value) {
+		if (isBlank(value)) {
+			return null;
+		}
 		try {
 			return value.contains(",")
 				? BigDecimal.valueOf(NumberFormat.getInstance(Locale.forLanguageTag("sv-SE")).parse(value).doubleValue())

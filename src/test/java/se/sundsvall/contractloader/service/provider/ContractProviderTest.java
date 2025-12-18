@@ -27,18 +27,20 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.PRECONDITION_FAILED;
 import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_NAME;
-import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_ORGANIZATION_NUMBER;
+import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_PARTY_ID;
 
 import generated.se.sundsvall.contract.Address;
 import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.Duration;
 import generated.se.sundsvall.contract.Extension;
 import generated.se.sundsvall.contract.ExtraParameterGroup;
+import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.Invoicing;
 import generated.se.sundsvall.contract.Notice;
 import generated.se.sundsvall.contract.Parameter;
 import generated.se.sundsvall.contract.Party;
 import generated.se.sundsvall.contract.Stakeholder;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -132,13 +134,13 @@ class ContractProviderTest {
 			.containsExactly(
 				tuple(MUNICIPALITY,
 					MUNICIPALITY_NAME,
-					null,
+					MUNICIPALITY_PARTY_ID,
 					List.of(LESSOR),
 					new Address()
 						.type(POSTAL_ADDRESS)
 						.postalCode(Constants.MUNICIPALITY_POSTAL_CODE)
 						.town(Constants.MUNICIPALITY_TOWN),
-					MUNICIPALITY_ORGANIZATION_NUMBER,
+					null,
 					List.of(new Parameter()
 						.key(Constants.ORGANIZATION_NAME_EXTENSION_KEY)
 						.displayName(Constants.ORGANIZATION_NAME_EXTENSION_DISPLAY)
@@ -168,6 +170,16 @@ class ContractProviderTest {
 						.country("land-2"),
 					null,
 					emptyList()));
+
+		assertThat(contract.getFees()).isEqualTo(new Fees()
+			.yearly(BigDecimal.valueOf(5000.0))
+			.total(BigDecimal.valueOf(5000.0))
+			.indexType("KPI 80")
+			.indexationRate(BigDecimal.valueOf(0.5))
+			.indexYear(2014)
+			.indexNumber(300)
+			.currency("SEK")
+			.additionalInformation(List.of("Avgift, båtplats")));
 
 		// Is Organization and therefore uses org number of the second call
 		verify(partyClient, times(2)).getPartyId(anyString(), any(), anyString());
