@@ -1,17 +1,21 @@
 package se.sundsvall.contractloader.integration.db.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import se.sundsvall.contractloader.integration.db.model.enums.SendStatus;
 
 @Entity
 @Table(name = "arrende_arrendekontrakt")
@@ -21,38 +25,38 @@ public class ArrendekontraktEntity {
 	@Column(name = "pk_id", nullable = false)
 	private Long id;
 
-	@Column(name = "arrendekontrakt")
+	@Column(name = "arrendekontrakt", unique = true)
 	private String arrendekontrakt;
 
 	@Column(name = "hyresid")
 	private String hyresid;
 
 	@Column(name = "kontraktsdatum")
-	private OffsetDateTime kontraktsdatum;
+	private LocalDate kontraktsdatum;
 
 	@Column(name = "fr_o_m_datum")
-	private OffsetDateTime fromDatum;
+	private LocalDate fromDatum;
 
 	@Column(name = "t_o_m_datum")
-	private OffsetDateTime tomDatum;
+	private LocalDate tomDatum;
 
 	@Column(name = "sista_debiteringsdatum")
-	private OffsetDateTime sistaDebiteringsdatum;
+	private LocalDate sistaDebiteringsdatum;
 
 	@Column(name = "godkant_datum")
-	private OffsetDateTime godkantDatum;
+	private LocalDate godkantDatum;
 
 	@Column(name = "uppsagt_datum")
-	private OffsetDateTime uppsagtDatum;
+	private LocalDate uppsagtDatum;
 
 	@Column(name = "uppsagt_av")
 	private String uppsagtAv;
 
 	@Column(name = "preliminart_uppsagt_datum")
-	private OffsetDateTime preliminartUppsagtDatum;
+	private LocalDate preliminartUppsagtDatum;
 
 	@Column(name = "onskad_avflyttning")
-	private OffsetDateTime onskadAvflyttning;
+	private LocalDate onskadAvflyttning;
 
 	@Column(name = "kontraktstyp")
 	private String kontraktstyp;
@@ -99,17 +103,30 @@ public class ArrendekontraktEntity {
 	@Column(name = "kopplat_till_id")
 	private String kopplatTillId;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "arrendekontrakt", referencedColumnName = "arrendekontrakt")
+	@Column(name = "send_status")
+	private SendStatus sendStatus;
+
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name = "arrendekontrakt",
+		referencedColumnName = "arrendekontrakt",
+		insertable = false,
+		updatable = false)
 	private List<ArrendekontraktsradEntity> arrendekontraktsrader;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "arrendekontrakt", referencedColumnName = "arrendekontrakt")
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinColumn(name = "arrendekontrakt",
+		referencedColumnName = "arrendekontrakt",
+		insertable = false,
+		updatable = false)
 	private List<ArrendatorEntity> arrendatorer;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "hyresid", referencedColumnName = "hyresid")
-	private List<FastighetEntity> fastigheter;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "hyresid",
+		referencedColumnName = "hyresid",
+		insertable = false,
+		updatable = false,
+		foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+	private FastighetEntity fastighet;
 
 	public static ArrendekontraktEntity create() {
 		return new ArrendekontraktEntity();
@@ -154,80 +171,80 @@ public class ArrendekontraktEntity {
 		return this;
 	}
 
-	public OffsetDateTime getKontraktsdatum() {
+	public LocalDate getKontraktsdatum() {
 		return kontraktsdatum;
 	}
 
-	public void setKontraktsdatum(OffsetDateTime kontraktsdatum) {
+	public void setKontraktsdatum(LocalDate kontraktsdatum) {
 		this.kontraktsdatum = kontraktsdatum;
 	}
 
-	public ArrendekontraktEntity withKontraktsdatum(OffsetDateTime kontraktsdatum) {
+	public ArrendekontraktEntity withKontraktsdatum(LocalDate kontraktsdatum) {
 		this.kontraktsdatum = kontraktsdatum;
 		return this;
 	}
 
-	public OffsetDateTime getFromDatum() {
+	public LocalDate getFromDatum() {
 		return fromDatum;
 	}
 
-	public void setFromDatum(OffsetDateTime fromDatum) {
+	public void setFromDatum(LocalDate fromDatum) {
 		this.fromDatum = fromDatum;
 	}
 
-	public ArrendekontraktEntity withFromDatum(OffsetDateTime fromDatum) {
+	public ArrendekontraktEntity withFromDatum(LocalDate fromDatum) {
 		this.fromDatum = fromDatum;
 		return this;
 	}
 
-	public OffsetDateTime getTomDatum() {
+	public LocalDate getTomDatum() {
 		return tomDatum;
 	}
 
-	public void setTomDatum(OffsetDateTime tomDatum) {
+	public void setTomDatum(LocalDate tomDatum) {
 		this.tomDatum = tomDatum;
 	}
 
-	public ArrendekontraktEntity withTomDatum(OffsetDateTime tomDatum) {
+	public ArrendekontraktEntity withTomDatum(LocalDate tomDatum) {
 		this.tomDatum = tomDatum;
 		return this;
 	}
 
-	public OffsetDateTime getSistaDebiteringsdatum() {
+	public LocalDate getSistaDebiteringsdatum() {
 		return sistaDebiteringsdatum;
 	}
 
-	public void setSistaDebiteringsdatum(OffsetDateTime sistaDebiteringsdatum) {
+	public void setSistaDebiteringsdatum(LocalDate sistaDebiteringsdatum) {
 		this.sistaDebiteringsdatum = sistaDebiteringsdatum;
 	}
 
-	public ArrendekontraktEntity withSistaDebiteringsdatum(OffsetDateTime sistaDebiteringsdatum) {
+	public ArrendekontraktEntity withSistaDebiteringsdatum(LocalDate sistaDebiteringsdatum) {
 		this.sistaDebiteringsdatum = sistaDebiteringsdatum;
 		return this;
 	}
 
-	public OffsetDateTime getGodkantDatum() {
+	public LocalDate getGodkantDatum() {
 		return godkantDatum;
 	}
 
-	public void setGodkantDatum(OffsetDateTime godkantDatum) {
+	public void setGodkantDatum(LocalDate godkantDatum) {
 		this.godkantDatum = godkantDatum;
 	}
 
-	public ArrendekontraktEntity withGodkantDatum(OffsetDateTime godkantDatum) {
+	public ArrendekontraktEntity withGodkantDatum(LocalDate godkantDatum) {
 		this.godkantDatum = godkantDatum;
 		return this;
 	}
 
-	public OffsetDateTime getUppsagtDatum() {
+	public LocalDate getUppsagtDatum() {
 		return uppsagtDatum;
 	}
 
-	public void setUppsagtDatum(OffsetDateTime uppsagtDatum) {
+	public void setUppsagtDatum(LocalDate uppsagtDatum) {
 		this.uppsagtDatum = uppsagtDatum;
 	}
 
-	public ArrendekontraktEntity withUppsagtDatum(OffsetDateTime uppsagtDatum) {
+	public ArrendekontraktEntity withUppsagtDatum(LocalDate uppsagtDatum) {
 		this.uppsagtDatum = uppsagtDatum;
 		return this;
 	}
@@ -245,28 +262,28 @@ public class ArrendekontraktEntity {
 		return this;
 	}
 
-	public OffsetDateTime getPreliminartUppsagtDatum() {
+	public LocalDate getPreliminartUppsagtDatum() {
 		return preliminartUppsagtDatum;
 	}
 
-	public void setPreliminartUppsagtDatum(OffsetDateTime preliminartUppsagtDatum) {
+	public void setPreliminartUppsagtDatum(LocalDate preliminartUppsagtDatum) {
 		this.preliminartUppsagtDatum = preliminartUppsagtDatum;
 	}
 
-	public ArrendekontraktEntity withPreliminartUppsagtDatum(OffsetDateTime preliminartUppsagtDatum) {
+	public ArrendekontraktEntity withPreliminartUppsagtDatum(LocalDate preliminartUppsagtDatum) {
 		this.preliminartUppsagtDatum = preliminartUppsagtDatum;
 		return this;
 	}
 
-	public OffsetDateTime getOnskadAvflyttning() {
+	public LocalDate getOnskadAvflyttning() {
 		return onskadAvflyttning;
 	}
 
-	public void setOnskadAvflyttning(OffsetDateTime onskadAvflyttning) {
+	public void setOnskadAvflyttning(LocalDate onskadAvflyttning) {
 		this.onskadAvflyttning = onskadAvflyttning;
 	}
 
-	public ArrendekontraktEntity withOnskadAvflyttning(OffsetDateTime onskadAvflyttning) {
+	public ArrendekontraktEntity withOnskadAvflyttning(LocalDate onskadAvflyttning) {
 		this.onskadAvflyttning = onskadAvflyttning;
 		return this;
 	}
@@ -466,6 +483,19 @@ public class ArrendekontraktEntity {
 		return this;
 	}
 
+	public SendStatus getSendStatus() {
+		return sendStatus;
+	}
+
+	public void setSendStatus(SendStatus sendStatus) {
+		this.sendStatus = sendStatus;
+	}
+
+	public ArrendekontraktEntity withSendStatus(SendStatus sendStatus) {
+		this.sendStatus = sendStatus;
+		return this;
+	}
+
 	public List<ArrendekontraktsradEntity> getArrendekontraktsrader() {
 		return arrendekontraktsrader;
 	}
@@ -492,16 +522,16 @@ public class ArrendekontraktEntity {
 		return this;
 	}
 
-	public List<FastighetEntity> getFastigheter() {
-		return fastigheter;
+	public FastighetEntity getFastighet() {
+		return fastighet;
 	}
 
-	public void setFastigheter(List<FastighetEntity> fastigheter) {
-		this.fastigheter = fastigheter;
+	public void setFastighet(FastighetEntity fastighet) {
+		this.fastighet = fastighet;
 	}
 
-	public ArrendekontraktEntity withFastigheter(List<FastighetEntity> fastigheter) {
-		this.fastigheter = fastigheter;
+	public ArrendekontraktEntity withFastighet(FastighetEntity fastighet) {
+		this.fastighet = fastighet;
 		return this;
 	}
 
@@ -510,22 +540,22 @@ public class ArrendekontraktEntity {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		ArrendekontraktEntity that = (ArrendekontraktEntity) o;
-		return Objects.equals(id, that.id) && Objects.equals(arrendekontrakt, that.arrendekontrakt) && Objects.equals(hyresid, that.hyresid) && Objects.equals(kontraktsdatum, that.kontraktsdatum)
-			&& Objects.equals(fromDatum, that.fromDatum) && Objects.equals(tomDatum, that.tomDatum) && Objects.equals(sistaDebiteringsdatum, that.sistaDebiteringsdatum) && Objects.equals(godkantDatum, that.godkantDatum)
-			&& Objects.equals(uppsagtDatum, that.uppsagtDatum) && Objects.equals(uppsagtAv, that.uppsagtAv) && Objects.equals(preliminartUppsagtDatum, that.preliminartUppsagtDatum) && Objects.equals(onskadAvflyttning,
-				that.onskadAvflyttning) && Objects.equals(kontraktstyp, that.kontraktstyp) && Objects.equals(uppsTidArrendator, that.uppsTidArrendator) && Objects.equals(enhetUppsTidArrendator, that.enhetUppsTidArrendator)
-			&& Objects.equals(uppsTidHyresvard, that.uppsTidHyresvard) && Objects.equals(enhetUppsTidHyresvard, that.enhetUppsTidHyresvard) && Objects.equals(forlangning, that.forlangning) && Objects.equals(
-				enhetForlangning, that.enhetForlangning) && Objects.equals(debiteringstyp, that.debiteringstyp) && Objects.equals(kontraktsarea, that.kontraktsarea) && Objects.equals(frifalt, that.frifalt) && Objects.equals(
-					fakturaperiod, that.fakturaperiod) && Objects.equals(markning, that.markning) && Objects.equals(kontraktsnamn, that.kontraktsnamn) && Objects.equals(huvudkontrakt, that.huvudkontrakt) && Objects.equals(
-						kopplatTillId, that.kopplatTillId) && Objects.equals(arrendekontraktsrader, that.arrendekontraktsrader) && Objects.equals(arrendatorer,
-							that.arrendatorer) && Objects.equals(fastigheter, that.fastigheter);
+		return Objects.equals(id, that.id) && Objects.equals(arrendekontrakt, that.arrendekontrakt) && Objects.equals(hyresid, that.hyresid) && Objects.equals(kontraktsdatum, that.kontraktsdatum) &&
+			Objects.equals(fromDatum, that.fromDatum) && Objects.equals(tomDatum, that.tomDatum) && Objects.equals(sistaDebiteringsdatum, that.sistaDebiteringsdatum) && Objects.equals(godkantDatum, that.godkantDatum) &&
+			Objects.equals(uppsagtDatum, that.uppsagtDatum) && Objects.equals(uppsagtAv, that.uppsagtAv) && Objects.equals(preliminartUppsagtDatum, that.preliminartUppsagtDatum) &&
+			Objects.equals(onskadAvflyttning, that.onskadAvflyttning) && Objects.equals(kontraktstyp, that.kontraktstyp) && Objects.equals(uppsTidArrendator, that.uppsTidArrendator) &&
+			Objects.equals(enhetUppsTidArrendator, that.enhetUppsTidArrendator) && Objects.equals(uppsTidHyresvard, that.uppsTidHyresvard) && Objects.equals(enhetUppsTidHyresvard, that.enhetUppsTidHyresvard) &&
+			Objects.equals(forlangning, that.forlangning) && Objects.equals(enhetForlangning, that.enhetForlangning) && Objects.equals(debiteringstyp, that.debiteringstyp) && Objects.equals(kontraktsarea, that.kontraktsarea) &&
+			Objects.equals(frifalt, that.frifalt) && Objects.equals(fakturaperiod, that.fakturaperiod) && Objects.equals(markning, that.markning) && Objects.equals(kontraktsnamn, that.kontraktsnamn) &&
+			Objects.equals(huvudkontrakt, that.huvudkontrakt) && Objects.equals(kopplatTillId, that.kopplatTillId) && Objects.equals(arrendekontraktsrader, that.arrendekontraktsrader) &&
+			Objects.equals(arrendatorer, that.arrendatorer) && Objects.equals(fastighet, that.fastighet) && Objects.equals(sendStatus, that.sendStatus);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, arrendekontrakt, hyresid, kontraktsdatum, fromDatum, tomDatum, sistaDebiteringsdatum, godkantDatum, uppsagtDatum, uppsagtAv, preliminartUppsagtDatum, onskadAvflyttning, kontraktstyp, uppsTidArrendator,
 			enhetUppsTidArrendator, uppsTidHyresvard, enhetUppsTidHyresvard, forlangning, enhetForlangning, debiteringstyp, kontraktsarea, frifalt, fakturaperiod, markning, kontraktsnamn, huvudkontrakt, kopplatTillId, arrendekontraktsrader,
-			arrendatorer, fastigheter);
+			arrendatorer, fastighet, sendStatus);
 	}
 
 	@Override
@@ -558,9 +588,10 @@ public class ArrendekontraktEntity {
 			", kontraktsnamn='" + kontraktsnamn + '\'' +
 			", huvudkontrakt='" + huvudkontrakt + '\'' +
 			", kopplatTillId='" + kopplatTillId + '\'' +
+			", sendStatus='" + sendStatus + '\'' +
 			", arrendekontraktsrader=" + arrendekontraktsrader +
 			", arrendatorer=" + arrendatorer +
-			", fastigheter=" + fastigheter +
+			", fastighet=" + fastighet +
 			'}';
 	}
 

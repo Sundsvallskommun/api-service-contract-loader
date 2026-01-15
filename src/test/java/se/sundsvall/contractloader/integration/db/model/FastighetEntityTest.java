@@ -5,13 +5,12 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanHashCode;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanToString;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
-import static java.time.OffsetDateTime.now;
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.allOf;
 
 import com.google.code.beanmatchers.BeanMatchers;
-import java.time.OffsetDateTime;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Random;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,7 +20,7 @@ class FastighetEntityTest {
 
 	@BeforeAll
 	static void setup() {
-		BeanMatchers.registerValueGenerator(() -> now().plusDays(new Random().nextInt()), OffsetDateTime.class);
+		BeanMatchers.registerValueGenerator(() -> now().plusDays(new Random().nextInt()), LocalDate.class);
 	}
 
 	@Test
@@ -60,7 +59,7 @@ class FastighetEntityTest {
 		final var franDatum = "franDatum";
 		final var tillDatum = "tillDatum";
 		final var enForvaltningsenhetKopplad = "enForvaltningsenhetKopplad";
-		final var noteringEntities = List.of(new NoteringEntity());
+		final var noteringEntity = new NoteringEntity();
 
 		var fastighetEntity = FastighetEntity.create()
 			.withId(id)
@@ -86,7 +85,7 @@ class FastighetEntityTest {
 			.withFranDatum(franDatum)
 			.withTillDatum(tillDatum)
 			.withEnForvaltningsenhetKopplad(enForvaltningsenhetKopplad)
-			.withNoteringar(noteringEntities);
+			.withNotering(noteringEntity);
 
 		assertThat(fastighetEntity).hasNoNullFieldsOrProperties();
 		assertThat(fastighetEntity.getId()).isEqualTo(id);
@@ -112,7 +111,7 @@ class FastighetEntityTest {
 		assertThat(fastighetEntity.getFranDatum()).isEqualTo(franDatum);
 		assertThat(fastighetEntity.getTillDatum()).isEqualTo(tillDatum);
 		assertThat(fastighetEntity.getEnForvaltningsenhetKopplad()).isEqualTo(enForvaltningsenhetKopplad);
-		assertThat(fastighetEntity.getNoteringar()).isEqualTo(noteringEntities);
+		assertThat(fastighetEntity.getNotering()).isEqualTo(noteringEntity);
 	}
 
 	@Test

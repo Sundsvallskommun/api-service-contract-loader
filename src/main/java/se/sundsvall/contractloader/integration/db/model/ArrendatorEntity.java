@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -45,10 +45,10 @@ public class ArrendatorEntity {
 	private String kontraktsrelation;
 
 	@Column(name = "relaterad_fr_o_m_datum")
-	private OffsetDateTime relateradFromDatum;
+	private LocalDate relateradFromDatum;
 
 	@Column(name = "relaterad_t_o_m_datum")
-	private OffsetDateTime relateradTomDatum;
+	private LocalDate relateradTomDatum;
 
 	@Column(name = "ordning")
 	private String ordning;
@@ -235,28 +235,28 @@ public class ArrendatorEntity {
 		return this;
 	}
 
-	public OffsetDateTime getRelateradFromDatum() {
+	public LocalDate getRelateradFromDatum() {
 		return relateradFromDatum;
 	}
 
-	public void setRelateradFromDatum(OffsetDateTime relateradFromDatum) {
+	public void setRelateradFromDatum(LocalDate relateradFromDatum) {
 		this.relateradFromDatum = relateradFromDatum;
 	}
 
-	public ArrendatorEntity withRelateradFromDatum(OffsetDateTime relateradFromDatum) {
+	public ArrendatorEntity withRelateradFromDatum(LocalDate relateradFromDatum) {
 		this.relateradFromDatum = relateradFromDatum;
 		return this;
 	}
 
-	public OffsetDateTime getRelateradTomDatum() {
+	public LocalDate getRelateradTomDatum() {
 		return relateradTomDatum;
 	}
 
-	public void setRelateradTomDatum(OffsetDateTime relateradTomDatum) {
+	public void setRelateradTomDatum(LocalDate relateradTomDatum) {
 		this.relateradTomDatum = relateradTomDatum;
 	}
 
-	public ArrendatorEntity withRelateradTomDatum(OffsetDateTime relateradTomDatum) {
+	public ArrendatorEntity withRelateradTomDatum(LocalDate relateradTomDatum) {
 		this.relateradTomDatum = relateradTomDatum;
 		return this;
 	}

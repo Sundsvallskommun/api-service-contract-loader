@@ -17,6 +17,7 @@ import se.sundsvall.contractloader.integration.db.model.ArrendatorEntity;
 import se.sundsvall.contractloader.integration.db.model.ArrendekontraktEntity;
 import se.sundsvall.contractloader.integration.db.model.ArrendekontraktsradEntity;
 import se.sundsvall.contractloader.integration.db.model.FastighetEntity;
+import se.sundsvall.contractloader.integration.db.model.enums.SendStatus;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = NONE)
@@ -31,10 +32,11 @@ class ArrendekontraktRepositoryTest {
 	private ArrendekontraktRepository repository;
 
 	@Test
-	void findAll() {
+	void findAllByStatusSent() {
+		Pageable pageable = PageRequest.of(0, 5);
+		final List<ArrendekontraktEntity> contracts = repository.findBySendStatusIsNullOrSendStatus(SendStatus.FAILED, pageable).getContent();
 
-		final List<ArrendekontraktEntity> contracts = repository.findAll();
-
+		contracts.forEach(contract -> repository.save(contract.withSendStatus(SendStatus.SENT)));
 		assertThat(contracts)
 			.hasSize(3)
 			.extracting(
@@ -59,47 +61,11 @@ class ArrendekontraktRepositoryTest {
 				tuple("LGH  INDEX", "2450,00"),
 				tuple("LGH  INDEX", "2558,13"));
 
-		assertThat(contracts.getFirst().getFastigheter()).hasSize(1)
+		assertThat(contracts.getFirst().getFastighet())
+			.isNotNull()
 			.extracting(
 				FastighetEntity::getFastighetsnr,
 				FastighetEntity::getFastighetsbeteckning)
-			.containsExactly(
-				tuple("123", "SUNDSVALL TEST 1"));
-	}
-
-	@Test
-	void findAllPaged() {
-
-		Pageable pageable = PageRequest.of(0, 1);
-		final List<ArrendekontraktEntity> contracts = repository.findAll(pageable).getContent();
-
-		assertThat(contracts)
-			.hasSize(1)
-			.extracting(
-				ArrendekontraktEntity::getArrendekontrakt)
-			.containsExactlyInAnyOrder(
-				"ARRENDEKONTRAKT-1");
-
-		assertThat(contracts.getFirst().getArrendatorer()).hasSize(1)
-			.extracting(
-				ArrendatorEntity::getNamn,
-				ArrendatorEntity::getPersonOrgNr)
-			.containsExactly(
-				tuple("ANKA KALLE", "191010101010"));
-
-		assertThat(contracts.getFirst().getArrendekontraktsrader()).hasSize(2)
-			.extracting(
-				ArrendekontraktsradEntity::getArrendeartikel,
-				ArrendekontraktsradEntity::getArshyra)
-			.containsExactly(
-				tuple("LGH  INDEX", "2450,00"),
-				tuple("LGH  INDEX", "2558,13"));
-
-		assertThat(contracts.getFirst().getFastigheter()).hasSize(1)
-			.extracting(
-				FastighetEntity::getFastighetsnr,
-				FastighetEntity::getFastighetsbeteckning)
-			.containsExactly(
-				tuple("123", "SUNDSVALL TEST 1"));
+			.containsExactly("123", "SUNDSVALL TEST 1");
 	}
 }

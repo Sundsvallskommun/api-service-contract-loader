@@ -2,15 +2,11 @@ package se.sundsvall.contractloader.integration.db.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.OffsetDateTime;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -31,10 +27,10 @@ public class ArrendekontraktsradEntity {
 	private String avitext;
 
 	@Column(name = "debiteras_fr_o_m_datum")
-	private OffsetDateTime debiterasFromDatum;
+	private LocalDate debiterasFromDatum;
 
 	@Column(name = "debiteras_t_o_m_datum")
-	private OffsetDateTime debiterasTomDatum;
+	private LocalDate debiterasTomDatum;
 
 	@Column(name = "basarshyra")
 	private String basarshyra;
@@ -43,10 +39,10 @@ public class ArrendekontraktsradEntity {
 	private String arshyra;
 
 	@Column(name = "del_av_ar_fr_o_m")
-	private OffsetDateTime delAvArFrom;
+	private LocalDate delAvArFrom;
 
 	@Column(name = "del_av_ar_t_o_m")
-	private OffsetDateTime delAvArTom;
+	private LocalDate delAvArTom;
 
 	@Column(name = "indexklausul")
 	private String indexklausul;
@@ -77,10 +73,6 @@ public class ArrendekontraktsradEntity {
 
 	@Column(name = "radnummer")
 	private String radnummer;
-
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "arrendeartikel", referencedColumnName = "arrendeartikel")
-	private List<ArrendeartikelEntity> arrendeartiklar;
 
 	public static ArrendekontraktsradEntity create() {
 		return new ArrendekontraktsradEntity();
@@ -138,28 +130,28 @@ public class ArrendekontraktsradEntity {
 		return this;
 	}
 
-	public OffsetDateTime getDebiterasFromDatum() {
+	public LocalDate getDebiterasFromDatum() {
 		return debiterasFromDatum;
 	}
 
-	public void setDebiterasFromDatum(OffsetDateTime debiterasFromDatum) {
+	public void setDebiterasFromDatum(LocalDate debiterasFromDatum) {
 		this.debiterasFromDatum = debiterasFromDatum;
 	}
 
-	public ArrendekontraktsradEntity withDebiterasFromDatum(OffsetDateTime debiterasFromDatum) {
+	public ArrendekontraktsradEntity withDebiterasFromDatum(LocalDate debiterasFromDatum) {
 		this.debiterasFromDatum = debiterasFromDatum;
 		return this;
 	}
 
-	public OffsetDateTime getDebiterasTomDatum() {
+	public LocalDate getDebiterasTomDatum() {
 		return debiterasTomDatum;
 	}
 
-	public void setDebiterasTomDatum(OffsetDateTime debiterasTomDatum) {
+	public void setDebiterasTomDatum(LocalDate debiterasTomDatum) {
 		this.debiterasTomDatum = debiterasTomDatum;
 	}
 
-	public ArrendekontraktsradEntity withDebiterasTomDatum(OffsetDateTime debiterasTomDatum) {
+	public ArrendekontraktsradEntity withDebiterasTomDatum(LocalDate debiterasTomDatum) {
 		this.debiterasTomDatum = debiterasTomDatum;
 		return this;
 	}
@@ -190,28 +182,28 @@ public class ArrendekontraktsradEntity {
 		return this;
 	}
 
-	public OffsetDateTime getDelAvArFrom() {
+	public LocalDate getDelAvArFrom() {
 		return delAvArFrom;
 	}
 
-	public void setDelAvArFrom(OffsetDateTime delAvArFrom) {
+	public void setDelAvArFrom(LocalDate delAvArFrom) {
 		this.delAvArFrom = delAvArFrom;
 	}
 
-	public ArrendekontraktsradEntity withDelAvArFrom(OffsetDateTime delAvArFrom) {
+	public ArrendekontraktsradEntity withDelAvArFrom(LocalDate delAvArFrom) {
 		this.delAvArFrom = delAvArFrom;
 		return this;
 	}
 
-	public OffsetDateTime getDelAvArTom() {
+	public LocalDate getDelAvArTom() {
 		return delAvArTom;
 	}
 
-	public void setDelAvArTom(OffsetDateTime delAvArTom) {
+	public void setDelAvArTom(LocalDate delAvArTom) {
 		this.delAvArTom = delAvArTom;
 	}
 
-	public ArrendekontraktsradEntity withDelAvArTom(OffsetDateTime delAvArTom) {
+	public ArrendekontraktsradEntity withDelAvArTom(LocalDate delAvArTom) {
 		this.delAvArTom = delAvArTom;
 		return this;
 	}
@@ -346,19 +338,6 @@ public class ArrendekontraktsradEntity {
 		return this;
 	}
 
-	public List<ArrendeartikelEntity> getArrendeartiklar() {
-		return arrendeartiklar;
-	}
-
-	public void setArrendeartiklar(List<ArrendeartikelEntity> arrendeartiklar) {
-		this.arrendeartiklar = arrendeartiklar;
-	}
-
-	public ArrendekontraktsradEntity withArrendeartiklar(List<ArrendeartikelEntity> arrendeartiklar) {
-		this.arrendeartiklar = arrendeartiklar;
-		return this;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
@@ -369,13 +348,13 @@ public class ArrendekontraktsradEntity {
 				that.arshyra) && Objects.equals(delAvArFrom, that.delAvArFrom) && Objects.equals(delAvArTom, that.delAvArTom) && Objects.equals(indexklausul, that.indexklausul) && Objects.equals(indexnamn, that.indexnamn)
 			&& Objects.equals(indexandel, that.indexandel) && Objects.equals(indexbasar, that.indexbasar) && Objects.equals(indexbasmanad, that.indexbasmanad) && Objects.equals(indexbasvarde, that.indexbasvarde)
 			&& Objects.equals(indexNuvarandeAr, that.indexNuvarandeAr) && Objects.equals(indexNuvarandeManad, that.indexNuvarandeManad) && Objects.equals(indexNuvarandeVarde, that.indexNuvarandeVarde) && Objects.equals(
-				radnummer, that.radnummer) && Objects.equals(arrendeartiklar, that.arrendeartiklar);
+				radnummer, that.radnummer);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, arrendekontrakt, arrendeartikel, avitext, debiterasFromDatum, debiterasTomDatum, basarshyra, arshyra, delAvArFrom, delAvArTom, indexklausul, indexnamn, indexandel, indexbasar, indexbasmanad, indexbasvarde, indexNuvarandeAr,
-			indexNuvarandeManad, indexNuvarandeVarde, radnummer, arrendeartiklar);
+			indexNuvarandeManad, indexNuvarandeVarde, radnummer);
 	}
 
 	@Override
@@ -401,7 +380,6 @@ public class ArrendekontraktsradEntity {
 			", indexNuvarandeManad='" + indexNuvarandeManad + '\'' +
 			", indexNuvarandeVarde='" + indexNuvarandeVarde + '\'' +
 			", radnummer='" + radnummer + '\'' +
-			", arrendeartiklar=" + arrendeartiklar +
 			'}';
 	}
 }
