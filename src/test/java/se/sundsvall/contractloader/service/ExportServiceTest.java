@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.FAILED;
 
 import generated.se.sundsvall.contract.Contract;
 import java.util.List;
@@ -40,7 +41,7 @@ class ExportServiceTest {
 	@Test
 	void export() {
 		// Arrange
-		final var pageable = PageRequest.of(0, 50);
+		final var pageable = PageRequest.of(0, 10);
 		final var kontrakt1 = "kontrakt1";
 		final var kontrakt2 = "kontrakt2";
 		final var arrendekontrakt1 = new ArrendekontraktEntity().withArrendekontrakt(kontrakt1);
@@ -48,7 +49,7 @@ class ExportServiceTest {
 		final var contract1 = new Contract().externalReferenceId(kontrakt1);
 		final var contract2 = new Contract().externalReferenceId(kontrakt2);
 
-		when(arrendekontraktRepositoryMock.findAll(pageable)).thenReturn(new PageImpl<>(List.of(arrendekontrakt1, arrendekontrakt2)));
+		when(arrendekontraktRepositoryMock.findBySendStatusIsNullOrSendStatus(FAILED, pageable)).thenReturn(new PageImpl<>(List.of(arrendekontrakt1, arrendekontrakt2)));
 		when(contractProviderMock.toContract(arrendekontrakt1)).thenReturn(contract1);
 		when(contractProviderMock.toContract(arrendekontrakt2)).thenReturn(contract2);
 
@@ -56,7 +57,9 @@ class ExportServiceTest {
 		exportService.export();
 
 		// Assert
-		verify(arrendekontraktRepositoryMock).findAll(pageable);
+		verify(arrendekontraktRepositoryMock).findBySendStatusIsNullOrSendStatus(FAILED, pageable);
+		verify(arrendekontraktRepositoryMock).save(arrendekontrakt1);
+		verify(arrendekontraktRepositoryMock).save(arrendekontrakt2);
 		verify(contractProviderMock, times(2)).toContract(any(ArrendekontraktEntity.class));
 		verify(contractClientMock, times(2)).createContract(anyString(), any(Contract.class));
 	}
@@ -64,14 +67,14 @@ class ExportServiceTest {
 	@Test
 	void exportWhenException() {
 		// Arrange
-		final var pageable = PageRequest.of(0, 50);
+		final var pageable = PageRequest.of(0, 10);
 		final var kontrakt1 = "kontrakt1";
 		final var kontrakt2 = "kontrakt2";
 		final var arrendekontrakt1 = new ArrendekontraktEntity().withArrendekontrakt(kontrakt1);
 		final var arrendekontrakt2 = new ArrendekontraktEntity().withArrendekontrakt(kontrakt2);
 		final var contract = new Contract().externalReferenceId(kontrakt2);
 
-		when(arrendekontraktRepositoryMock.findAll(pageable)).thenReturn(new PageImpl<>(List.of(arrendekontrakt1, arrendekontrakt2)));
+		when(arrendekontraktRepositoryMock.findBySendStatusIsNullOrSendStatus(FAILED, pageable)).thenReturn(new PageImpl<>(List.of(arrendekontrakt1, arrendekontrakt2)));
 		when(contractProviderMock.toContract(arrendekontrakt1)).thenThrow(Problem.valueOf(Status.I_AM_A_TEAPOT, "Error occurred"));
 		when(contractProviderMock.toContract(arrendekontrakt2)).thenReturn(contract);
 
@@ -79,7 +82,9 @@ class ExportServiceTest {
 		exportService.export();
 
 		// Assert
-		verify(arrendekontraktRepositoryMock).findAll(pageable);
+		verify(arrendekontraktRepositoryMock).findBySendStatusIsNullOrSendStatus(FAILED, pageable);
+		verify(arrendekontraktRepositoryMock).save(arrendekontrakt1);
+		verify(arrendekontraktRepositoryMock).save(arrendekontrakt2);
 		verify(contractProviderMock, times(2)).toContract(any(ArrendekontraktEntity.class));
 		verify(contractClientMock).createContract(anyString(), any(Contract.class));
 	}

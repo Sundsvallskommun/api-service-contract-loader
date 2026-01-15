@@ -8,16 +8,19 @@ INSERT INTO arrende_arrendekontrakt (arrendekontrakt, hyresid, kontraktsdatum, f
                                                       upps_tid_hyresvard, enhet_upps_tid_hyresvard, forlangning,
                                                       enhet_forlangning, debiteringstyp, kontraktsarea, frifalt,
                                                       fakturaperiod, markning, kontraktsnamn, huvudkontrakt,
-                                                      kopplat_till_id)
+                                                      kopplat_till_id, send_status)
 VALUES ('ARRENDEKONTRAKT-1', 'HYRESID-1', '2021-12-29 00:00:00', '2022-01-01 00:00:00', NULL, '2023-03-02 00:00:00',
         '2024-12-29 00:00:00', '2023-03-02 00:00:00', 'Arrendator', NULL, '2023-03-02 00:00:00', 'LÄGENHETSARRENDE',
-        '3', 'månad', '3', 'månad', '', 'månad', '_ARRENDE', '245,00', '', 'år', '', '', '', ''),
+        '3', 'månad', '3', 'månad', '', 'månad', '_ARRENDE', '245,00', '', 'år', '', '', '', '', null),
        ('ARRENDEKONTRAKT-2', 'HYRESID-2', '2021-12-29 00:00:00', '2022-01-01 00:00:00', NULL, '2023-03-02 00:00:00',
         '2009-12-29 00:00:00', '2023-03-02 00:00:00', 'Arrendator', NULL, '2023-03-02 00:00:00', 'LÄGENHETSARRENDE',
-        '3', 'månad', '3', 'månad', '', 'månad', '_ARRENDE', '255,00', '', 'år', '', '', '', ''),
+        '3', 'månad', '3', 'månad', '', 'månad', '_ARRENDE', '255,00', '', 'år', '', '', '', '', null),
        ('ARRENDEKONTRAKT-3', 'HYRESID-3', '2020-09-06 00:00:00', '2025-04-13 00:00:00', NULL, '2023-03-02 00:00:00',
         '2019-09-06 00:00:00', '2023-03-02 00:00:00', 'Arrendator', NULL, '2023-03-02 00:00:00', 'LÄGENHETSARRENDE',
-        '3', 'månad', '3', 'månad', '0', 'månad', '_ARRENDE', '290,00', '', 'år', '', '', '', '');
+        '3', 'månad', '3', 'månad', '0', 'månad', '_ARRENDE', '290,00', '', 'år', '', '', '', '', 'FAILED'),
+        ('ARRENDEKONTRAKT-4', 'HYRESID-3', '2020-09-06 00:00:00', '2025-04-13 00:00:00', NULL, '2023-03-02 00:00:00',
+                '2019-09-06 00:00:00', '2023-03-02 00:00:00', 'Arrendator', NULL, '2023-03-02 00:00:00', 'LÄGENHETSARRENDE',
+                '3', 'månad', '3', 'månad', '0', 'månad', '_ARRENDE', '290,00', '', 'år', '', '', '', '', 'SENT');
 --------------------------------
 -- Testdata for arrende_arrendekontraktsrader
 --------------------------------
@@ -50,14 +53,6 @@ INSERT INTO arrende_arrendator (arrendekontrakt,kontaktid,person_org_nr,kategori
 	 ('ARRENDEKONTRAKT-1','TEST','191010101010','Person','ANKA KALLE','KALLE','ANKA','','Kontraktsinnehavare','2010-07-01 00:00:00',NULL,'1','VÄGEN 16','','12345','ANKEBORG','SVERIGE','','','','','Ej angivet','Nej','','','','',''),
 	 ('ARRENDEKONTRAKT-2','TEST','196010101010','Person','ANKA KAJSA','KAJSA','ANKA','','Kontraktsinnehavare','1999-09-01 00:00:00',NULL,'1','STORGATAN 12','','45678','ANKEBORG','SVERIGE','','','','','Ej angivet','Nej','','','','',''),
 	 ('ARRENDEKONTRAKT-3','TEST','199010101010','Person','VON ANKA JOAKIM','JOAKIM','VON ANKA','','Kontraktsinnehavare','1999-09-01 00:00:00',NULL,'1','GATAN 103','','89101','ANKEBORG','SVERIGE','','','','','Ej angivet','Nej','','','','','');
---------------------------------
--- Testdata for arrende_arrendeartikel
---------------------------------
-INSERT INTO arrende_arrendeartikel (arrendeartikel,artikelbenamning,avitext,artikelgrupp,artikeltyp,reglering,pris,ingar_i_kontraktssumma,avdrag,debiteras_alltid_hel_period,avvikelsetolerans_procent,summarad,aktiv) VALUES
-	 ('JAKT INDEX','JAKTARRENDE','JAKTARRENDE  INDEX','','Basavgift','Index','0,00','Ja','Nej','Nej','','','Ja'),
-	 ('JORD','JORDBRUKSARRENDE','JORDBRUKSARRENDE','','Basavgift','(Ingen)','0,00','Ja','Nej','Nej','','','Ja'),
-	 ('LGH','LÄGENHETSARRENDE','ARRENDE-AVGIFT','','Basavgift','(Ingen)','0,00','Ja','Nej','Nej','','','Ja'),
-	 ('LGH  INDEX','LÄGENHETSARRENDE','ARRENDE-AVGIFT  INDEX','','Basavgift','Index','0,00','Ja','Nej','Nej','','','Ja');
 -------------------------------
 -- Testdata for gemensamt_notering
 --------------------------------

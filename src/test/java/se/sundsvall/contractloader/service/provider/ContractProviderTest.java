@@ -120,7 +120,7 @@ class ContractProviderTest {
 				tuple("terminationDate", arrendekontraktEntity.getUppsagtDatum().toString()),
 				tuple("terminatedBy", arrendekontraktEntity.getUppsagtAv()),
 				tuple("originalContractType", arrendekontraktEntity.getKontraktstyp()),
-				tuple("originalContractFilename", arrendekontraktEntity.getFastigheter().getFirst().getNoteringar().getFirst().getFilnamn()));
+				tuple("originalContractFilename", arrendekontraktEntity.getFastighet().getNotering().getFilnamn()));
 
 		assertThat(contract.getStakeholders()).hasSize(3)
 			.extracting(
@@ -239,7 +239,7 @@ class ContractProviderTest {
 			.withFakturaperiod("år")
 			.withArrendekontraktsrader(createArrendekontraktsrader())
 			.withArrendatorer(createArrendatorer())
-			.withFastigheter(createFastigheter());
+			.withFastighet(createFastighet());
 	}
 
 	private List<ArrendatorEntity> createArrendatorer() {
@@ -276,15 +276,14 @@ class ContractProviderTest {
 				.withLand("land-2"));
 	}
 
-	private List<FastighetEntity> createFastigheter() {
-		return List.of(
-			new FastighetEntity()
+	private FastighetEntity createFastighet() {
+		return new FastighetEntity()
+			.withFastighetsnr("fastighetsnr-1")
+			.withFastighetsbeteckning("fastighetsbeteckning-1")
+			.withHyresid("hyresid-1")
+			.withNotering(new NoteringEntity()
 				.withFastighetsnr("fastighetsnr-1")
-				.withFastighetsbeteckning("fastighetsbeteckning-1")
-				.withHyresid("hyresid-1")
-				.withNoteringar(List.of(new NoteringEntity()
-					.withFastighetsnr("fastighetsnr-1")
-					.withFilnamn("filnamn-1"))));
+				.withFilnamn("filnamn-1"));
 	}
 
 	private List<ArrendekontraktsradEntity> createArrendekontraktsrader() {

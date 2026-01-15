@@ -16,6 +16,7 @@ import java.util.Random;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import se.sundsvall.contractloader.integration.db.model.enums.SendStatus;
 
 class ArrendekontraktEntityTest {
 
@@ -64,9 +65,10 @@ class ArrendekontraktEntityTest {
 		final var kontraktsnamn = "kontraktsnamn";
 		final var huvudkontrakt = "huvudkontrakt";
 		final var kopplatTillId = "kopplatTillId";
+		final var sendStatus = SendStatus.SENT;
 		final var arrendatorEntities = List.of(ArrendatorEntity.create());
 		final var arrendeKontratsraderEntities = List.of(ArrendekontraktsradEntity.create());
-		final var fastigheterEntities = List.of(FastighetEntity.create());
+		final var fastighetEntity = FastighetEntity.create();
 
 		var arrendekontraktEntity = ArrendekontraktEntity.create()
 			.withId(id)
@@ -96,9 +98,10 @@ class ArrendekontraktEntityTest {
 			.withKontraktsnamn(kontraktsnamn)
 			.withHuvudkontrakt(huvudkontrakt)
 			.withKopplatTillId(kopplatTillId)
+			.withSendStatus(sendStatus)
 			.withArrendatorer(arrendatorEntities)
 			.withArrendekontraktsrader(arrendeKontratsraderEntities)
-			.withFastigheter(fastigheterEntities);
+			.withFastighet(fastighetEntity);
 
 		assertThat(arrendekontraktEntity).hasNoNullFieldsOrProperties();
 		assertThat(arrendekontraktEntity.getId()).isEqualTo(id);
@@ -128,9 +131,10 @@ class ArrendekontraktEntityTest {
 		assertThat(arrendekontraktEntity.getKontraktsnamn()).isEqualTo(kontraktsnamn);
 		assertThat(arrendekontraktEntity.getHuvudkontrakt()).isEqualTo(huvudkontrakt);
 		assertThat(arrendekontraktEntity.getKopplatTillId()).isEqualTo(kopplatTillId);
+		assertThat(arrendekontraktEntity.getSendStatus()).isEqualTo(sendStatus);
 		assertThat(arrendekontraktEntity.getArrendatorer()).isEqualTo(arrendatorEntities);
 		assertThat(arrendekontraktEntity.getArrendekontraktsrader()).isEqualTo(arrendeKontratsraderEntities);
-		assertThat(arrendekontraktEntity.getFastigheter()).isEqualTo(fastigheterEntities);
+		assertThat(arrendekontraktEntity.getFastighet()).isEqualTo(fastighetEntity);
 	}
 
 	@Test

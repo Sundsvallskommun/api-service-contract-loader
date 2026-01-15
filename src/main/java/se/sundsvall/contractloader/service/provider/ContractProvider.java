@@ -74,6 +74,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import se.sundsvall.contractloader.integration.db.model.ArrendatorEntity;
@@ -87,6 +90,7 @@ import se.sundsvall.contractloader.service.Constants;
 @Component
 public final class ContractProvider {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContractProvider.class);
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String HUNDRED_PERCENT = "100";
 	private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
@@ -107,7 +111,7 @@ public final class ContractProvider {
 				.type(LEASE_AGREEMENT)
 				.extraParameters(toExtraParameterGroups(entity))
 				.stakeholders(toStakeholders(entity.getArrendatorer()))
-				.propertyDesignations(getPropertyDesignations(entity.getFastigheter()))
+				.propertyDesignations(getPropertyDesignations(entity.getFastighet()))
 				.duration(toDuration(entity.getFromDatum(), entity.getTomDatum()))
 				.fees(toFees(entity.getArrendekontraktsrader(), entity.getKontraktstyp()))
 				.invoicing(toInvoicing(entity))
@@ -192,17 +196,12 @@ public final class ContractProvider {
 			.party(Party.LESSOR);
 	}
 
-	private static List<PropertyDesignation> getPropertyDesignations(final List<FastighetEntity> fastighetEntities) {
-		if (fastighetEntities == null) {
-			return Collections.emptyList();
-		}
-		return fastighetEntities.stream()
-			.filter(Objects::nonNull)
+	private static List<PropertyDesignation> getPropertyDesignations(final FastighetEntity fastighetEntity) {
+		return ofNullable(fastighetEntity)
 			.map(FastighetEntity::getFastighetsbeteckning)
 			.filter(not(String::isBlank))
-			.map(fastighetsbeteckning -> new PropertyDesignation()
-				.name(fastighetsbeteckning))
-			.toList();
+			.map(fastighetsbeteckning -> List.of(new PropertyDesignation().name(fastighetsbeteckning)))
+			.orElse(Collections.emptyList());
 	}
 
 	private List<ExtraParameterGroup> toExtraParameterGroups(final ArrendekontraktEntity arrendekontraktEntity) {
@@ -234,13 +233,10 @@ public final class ContractProvider {
 	private ExtraParameterGroup createContractDetailsGroup(final ArrendekontraktEntity arrendekontraktEntity) {
 		var parameters = new LinkedHashMap<String, String>();
 
-		final var fileName = ofNullable(arrendekontraktEntity.getFastigheter()).orElse(emptyList()).stream()
-			.map(FastighetEntity::getNoteringar)
-			.flatMap(List::stream)
-			.filter(Objects::nonNull)
+		final var fileName = ofNullable(arrendekontraktEntity.getFastighet())
+			.map(FastighetEntity::getNotering)
 			.map(NoteringEntity::getFilnamn)
-			.filter(not(String::isBlank))
-			.findFirst();
+			.filter(not(String::isBlank));
 
 		parameters.put(CONTRACT_DETAILS_MIGRATED_FROM_PARAMETER, CONTRACT_DETAILS_MIGRATED_FROM_VALUE);
 		ofNullable(arrendekontraktEntity.getArrendekontrakt()).filter(not(String::isBlank)).ifPresent(contractNumber -> parameters.put(CONTRACT_DETAILS_CONTRACT_NUMBER_PARAMETER, contractNumber));
@@ -292,17 +288,17 @@ public final class ContractProvider {
 			.roles(getRoles(arrendatorEntity))
 			.organizationName(getOrganizationName(arrendatorEntity))
 			.partyId(getPartyId(arrendatorEntity.getPersonOrgNr()))
-			.emailAddress(arrendatorEntity.getEpost())
+			.emailAddress(ofNullable(arrendatorEntity.getEpost()).filter(not(String::isBlank)).orElse(null))
 			.phoneNumber(getPhoneNumber(arrendatorEntity))
-			.firstName(arrendatorEntity.getFornamn())
-			.lastName(arrendatorEntity.getEfternamn())
+			.firstName(ofNullable(arrendatorEntity.getFornamn()).filter(not(String::isBlank)).orElse(null))
+			.lastName(ofNullable(arrendatorEntity.getEfternamn()).filter(not(String::isBlank)).orElse(null))
 			.address(new Address()
 				.type(POSTAL_ADDRESS)
-				.careOf(arrendatorEntity.getAvdelning())
-				.postalCode(arrendatorEntity.getPostnummer())
+				.careOf(ofNullable(arrendatorEntity.getAvdelning()).filter(not(String::isBlank)).orElse(null))
+				.postalCode(ofNullable(arrendatorEntity.getPostnummer()).filter(not(String::isBlank)).orElse(null))
 				.streetAddress(getStreetAddress(arrendatorEntity))
-				.town(arrendatorEntity.getOrt())
-				.country(arrendatorEntity.getLand()));
+				.town(ofNullable(arrendatorEntity.getOrt()).filter(not(String::isBlank)).orElse(null))
+				.country(ofNullable(arrendatorEntity.getLand()).filter(not(String::isBlank)).orElse(null)));
 
 	}
 
@@ -336,14 +332,21 @@ public final class ContractProvider {
 				phoneNumber = workNumber;
 			}
 		}
-		return phoneNumber;
+		return Optional.of(phoneNumber)
+			.filter(not(String::isBlank))
+			.orElse(null);
 	}
 
 	private String getPartyId(final String persOrgNr) {
 		if (isBlank(persOrgNr)) {
 			throw Problem.valueOf(PRECONDITION_FAILED, "Person- or organization number is blank");
 		}
-		var partyId = partyClient.getPartyId(MUNICIPALITY_ID, ENTERPRISE, persOrgNr);
+		var partyId = Optional.of("");
+		try {
+			partyId = partyClient.getPartyId(MUNICIPALITY_ID, ENTERPRISE, persOrgNr);
+		} catch (Exception _) {
+			LOGGER.warn("Could not retrieve partyId for organization number {}", persOrgNr);
+		}
 		if (partyId.isEmpty()) {
 			partyId = partyClient.getPartyId(MUNICIPALITY_ID, PRIVATE, persOrgNr);
 		}

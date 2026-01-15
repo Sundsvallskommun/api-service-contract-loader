@@ -1,16 +1,17 @@
 package se.sundsvall.contractloader.integration.db.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -21,7 +22,7 @@ public class FastighetEntity {
 	@Column(name = "pk_id", nullable = false)
 	private Long id;
 
-	@Column(name = "hyresid")
+	@Column(name = "hyresid", unique = true)
 	private String hyresid;
 
 	@Column(name = "foretag")
@@ -30,7 +31,7 @@ public class FastighetEntity {
 	@Column(name = "foretagsnamn")
 	private String foretagsnamn;
 
-	@Column(name = "fastighetsnr")
+	@Column(name = "fastighetsnr", unique = true)
 	private String fastighetsnr;
 
 	@Column(name = "fastighetsbeteckning")
@@ -87,9 +88,13 @@ public class FastighetEntity {
 	@Column(name = "en_forvaltningsenhet_kopplad")
 	private String enForvaltningsenhetKopplad;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "fastighetsnr", referencedColumnName = "fastighetsnr")
-	private List<NoteringEntity> noteringar;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "fastighetsnr",
+		referencedColumnName = "fastighetsnr",
+		insertable = false,
+		updatable = false,
+		foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+	private NoteringEntity notering;
 
 	public static FastighetEntity create() {
 		return new FastighetEntity();
@@ -394,16 +399,16 @@ public class FastighetEntity {
 		return this;
 	}
 
-	public List<NoteringEntity> getNoteringar() {
-		return noteringar;
+	public NoteringEntity getNotering() {
+		return notering;
 	}
 
-	public void setNoteringar(List<NoteringEntity> noteringar) {
-		this.noteringar = noteringar;
+	public void setNotering(NoteringEntity notering) {
+		this.notering = notering;
 	}
 
-	public FastighetEntity withNoteringar(List<NoteringEntity> noteringar) {
-		this.noteringar = noteringar;
+	public FastighetEntity withNotering(NoteringEntity notering) {
+		this.notering = notering;
 		return this;
 	}
 
@@ -417,13 +422,13 @@ public class FastighetEntity {
 			&& Objects.equals(fangesdatum, that.fangesdatum) && Objects.equals(agarforhallande, that.agarforhallande) && Objects.equals(agare, that.agare) && Objects.equals(agarenamn, that.agarenamn)
 			&& Objects.equals(postadress, that.postadress) && Objects.equals(postadress2, that.postadress2) && Objects.equals(postnummer, that.postnummer) && Objects.equals(ort, that.ort) && Objects.equals(
 				land, that.land) && Objects.equals(tomtratt, that.tomtratt) && Objects.equals(tomtrattDodadDatum, that.tomtrattDodadDatum) && Objects.equals(franDatum, that.franDatum) && Objects.equals(tillDatum,
-					that.tillDatum) && Objects.equals(enForvaltningsenhetKopplad, that.enForvaltningsenhetKopplad) && Objects.equals(noteringar, that.noteringar);
+					that.tillDatum) && Objects.equals(enForvaltningsenhetKopplad, that.enForvaltningsenhetKopplad) && Objects.equals(notering, that.notering);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, hyresid, foretag, foretagsnamn, fastighetsnr, fastighetsbeteckning, kommun, trakt, block, fangesdatum, agarforhallande, agare, agarenamn, postadress, postadress2, postnummer, ort, land, tomtratt, tomtrattDodadDatum,
-			franDatum, tillDatum, enForvaltningsenhetKopplad, noteringar);
+			franDatum, tillDatum, enForvaltningsenhetKopplad, notering);
 	}
 
 	@Override
@@ -452,7 +457,7 @@ public class FastighetEntity {
 			", franDatum='" + franDatum + '\'' +
 			", tillDatum='" + tillDatum + '\'' +
 			", enForvaltningsenhetKopplad='" + enForvaltningsenhetKopplad + '\'' +
-			", noteringar=" + noteringar +
+			", notering=" + notering +
 			'}';
 	}
 

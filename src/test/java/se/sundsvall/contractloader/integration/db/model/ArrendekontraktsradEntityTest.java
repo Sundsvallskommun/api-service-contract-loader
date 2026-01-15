@@ -11,7 +11,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 
 import com.google.code.beanmatchers.BeanMatchers;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Random;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
@@ -57,7 +56,6 @@ class ArrendekontraktsradEntityTest {
 		final var indexNuvarandeManad = "indexNuvarandeManad";
 		final var indexNuvarandeVarde = "indexNuvarandeVarde";
 		final var radnummer = "radnummer";
-		final var arrendeartikelEntities = List.of(new ArrendeartikelEntity());
 
 		var arrendekontraktsraderEntity = ArrendekontraktsradEntity.create()
 			.withId(id)
@@ -79,8 +77,7 @@ class ArrendekontraktsradEntityTest {
 			.withIndexNuvarandeAr(indexNuvarandeAr)
 			.withIndexNuvarandeManad(indexNuvarandeManad)
 			.withIndexNuvarandeVarde(indexNuvarandeVarde)
-			.withRadnummer(radnummer)
-			.withArrendeartiklar(arrendeartikelEntities);
+			.withRadnummer(radnummer);
 
 		assertThat(arrendekontraktsraderEntity).hasNoNullFieldsOrProperties();
 		assertThat(arrendekontraktsraderEntity.getId()).isEqualTo(id);
@@ -103,7 +100,6 @@ class ArrendekontraktsradEntityTest {
 		assertThat(arrendekontraktsraderEntity.getIndexNuvarandeManad()).isEqualTo(indexNuvarandeManad);
 		assertThat(arrendekontraktsraderEntity.getIndexNuvarandeVarde()).isEqualTo(indexNuvarandeVarde);
 		assertThat(arrendekontraktsraderEntity.getRadnummer()).isEqualTo(radnummer);
-		assertThat(arrendekontraktsraderEntity.getArrendeartiklar()).isEqualTo(arrendeartikelEntities);
 	}
 
 	@Test
