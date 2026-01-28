@@ -2,11 +2,14 @@ package se.sundsvall.contractloader.service.provider;
 
 import static generated.se.sundsvall.contract.AddressType.POSTAL_ADDRESS;
 import static generated.se.sundsvall.contract.ContractType.LEASE_AGREEMENT;
+import static generated.se.sundsvall.contract.ContractType.PURCHASE_AGREEMENT;
 import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
 import static generated.se.sundsvall.contract.LeaseType.OTHER_FEE;
 import static generated.se.sundsvall.contract.Party.LESSEE;
 import static generated.se.sundsvall.contract.StakeholderType.MUNICIPALITY;
 import static generated.se.sundsvall.contract.StakeholderType.OTHER;
+import static generated.se.sundsvall.contract.Status.ACTIVE;
+import static generated.se.sundsvall.contract.Status.TERMINATED;
 import static generated.se.sundsvall.contract.TimeUnit.MONTHS;
 import static generated.se.sundsvall.contract.TimeUnit.YEARS;
 import static generated.se.sundsvall.party.PartyType.ENTERPRISE;
@@ -19,6 +22,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.zalando.problem.Status.PRECONDITION_FAILED;
+import static se.sundsvall.contractloader.service.Constants.ALLMAN_PLATSUPPLATELSE;
 import static se.sundsvall.contractloader.service.Constants.CATEGORY_PERSON;
 import static se.sundsvall.contractloader.service.Constants.CONTRACT_DETAILS_CONTRACT_DATE_PARAMETER;
 import static se.sundsvall.contractloader.service.Constants.CONTRACT_DETAILS_CONTRACT_NAME_PARAMETER;
@@ -49,6 +53,7 @@ import static se.sundsvall.contractloader.service.Constants.stakeholderTypeMappi
 
 import generated.se.sundsvall.contract.Address;
 import generated.se.sundsvall.contract.Contract;
+import generated.se.sundsvall.contract.ContractType;
 import generated.se.sundsvall.contract.Duration;
 import generated.se.sundsvall.contract.Extension;
 import generated.se.sundsvall.contract.ExtraParameterGroup;
@@ -84,6 +89,7 @@ import se.sundsvall.contractloader.integration.db.model.ArrendekontraktEntity;
 import se.sundsvall.contractloader.integration.db.model.ArrendekontraktsradEntity;
 import se.sundsvall.contractloader.integration.db.model.FastighetEntity;
 import se.sundsvall.contractloader.integration.db.model.NoteringEntity;
+import se.sundsvall.contractloader.integration.estateinfo.EstateInfoClient;
 import se.sundsvall.contractloader.integration.party.PartyClient;
 import se.sundsvall.contractloader.service.Constants;
 
@@ -97,9 +103,11 @@ public final class ContractProvider {
 	private static final double ONE = 1;
 	private static final String MONTH = "månad";
 	private final PartyClient partyClient;
+	private final EstateInfoClient estateInfoClient;
 
-	public ContractProvider(PartyClient partyClient) {
+	public ContractProvider(PartyClient partyClient, EstateInfoClient estateInfoClient) {
 		this.partyClient = partyClient;
+		this.estateInfoClient = estateInfoClient;
 	}
 
 	public Contract toContract(final ArrendekontraktEntity arrendekontraktEntity) {
@@ -108,7 +116,7 @@ public final class ContractProvider {
 				.externalReferenceId(entity.getArrendekontrakt())
 				.leaseType(toLeaseType(entity.getKontraktstyp()))
 				.status(toStatus(entity))
-				.type(LEASE_AGREEMENT)
+				.type(toContractType(entity.getKontraktstyp()))
 				.extraParameters(toExtraParameterGroups(entity))
 				.stakeholders(toStakeholders(entity.getArrendatorer()))
 				.propertyDesignations(getPropertyDesignations(entity.getFastighet()))
@@ -123,17 +131,22 @@ public final class ContractProvider {
 			.orElse(null);
 	}
 
+	private static ContractType toContractType(String contractType) {
+		return contractType != null && contractType.equals(ALLMAN_PLATSUPPLATELSE)
+			? PURCHASE_AGREEMENT
+			: LEASE_AGREEMENT;
+	}
+
 	private static LeaseType toLeaseType(String contractType) {
+		//TODO: null if ALLMAN_PLATSUPPLATELSE
 		return ofNullable(Constants.leaseTypeMapping.get(contractType)).orElse(OTHER_FEE);
 	}
 
 	private Status toStatus(final ArrendekontraktEntity arrendekontraktEntity) {
-		if (isNull(arrendekontraktEntity.getTomDatum()) || arrendekontraktEntity.getTomDatum().isAfter(LocalDate.now())) {
-			return Status.ACTIVE;
-		} else if (arrendekontraktEntity.getTomDatum().isBefore(LocalDate.now()) || Objects.nonNull(arrendekontraktEntity.getSistaDebiteringsdatum())) {
-			return Status.TERMINATED;
+		if (Objects.nonNull(arrendekontraktEntity.getSistaDebiteringsdatum()) && arrendekontraktEntity.getSistaDebiteringsdatum().isBefore(LocalDate.now())) {
+			return TERMINATED;
 		}
-		return Status.ACTIVE;
+		return ACTIVE;
 	}
 
 	private Invoicing toInvoicing(final ArrendekontraktEntity arrendekontraktEntity) {
@@ -189,18 +202,29 @@ public final class ContractProvider {
 	private Notice toLessorNotice(ArrendekontraktEntity arrendekontraktEntity) {
 		return new Notice()
 			.periodOfNotice(ofNullable(arrendekontraktEntity.getUppsTidHyresvard()).map(this::toInteger).orElse(null))
-			.unit(ofNullable(arrendekontraktEntity.getUppsTidHyresvard())
+			.unit(ofNullable(arrendekontraktEntity.getEnhetUppsTidHyresvard())
 				// There are only "månad" and "år" in the data
 				.map(unit -> MONTH.equals(unit) ? MONTHS : YEARS)
 				.orElse(null))
 			.party(Party.LESSOR);
 	}
 
-	private static List<PropertyDesignation> getPropertyDesignations(final FastighetEntity fastighetEntity) {
+	private List<PropertyDesignation> getPropertyDesignations(final FastighetEntity fastighetEntity) {
 		return ofNullable(fastighetEntity)
 			.map(FastighetEntity::getFastighetsbeteckning)
 			.filter(not(String::isBlank))
-			.map(fastighetsbeteckning -> List.of(new PropertyDesignation().name(fastighetsbeteckning)))
+			.map(designation -> {
+				var propertyDesignation = new PropertyDesignation().name(designation);
+				try {
+					var estates = estateInfoClient.getEstateByDesignation(MUNICIPALITY_ID, designation);
+					if (estates != null && !estates.isEmpty()) {
+						propertyDesignation.district(estates.getFirst().getDistrictname());
+					}
+				} catch (Exception e) {
+					LOGGER.warn("Could not retrieve district for designation {}", designation, e);
+				}
+				return List.of(propertyDesignation);
+			})
 			.orElse(Collections.emptyList());
 	}
 

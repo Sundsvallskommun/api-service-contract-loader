@@ -13,6 +13,7 @@ import static generated.se.sundsvall.contract.StakeholderType.MUNICIPALITY;
 import static generated.se.sundsvall.contract.StakeholderType.ORGANIZATION;
 import static generated.se.sundsvall.contract.StakeholderType.PERSON;
 import static generated.se.sundsvall.contract.Status.TERMINATED;
+import static generated.se.sundsvall.contract.TimeUnit.MONTHS;
 import static generated.se.sundsvall.contract.TimeUnit.YEARS;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +41,7 @@ import generated.se.sundsvall.contract.Notice;
 import generated.se.sundsvall.contract.Parameter;
 import generated.se.sundsvall.contract.Party;
 import generated.se.sundsvall.contract.Stakeholder;
+import generated.se.sundsvall.estateinfo.EstateDesignationResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -56,6 +58,7 @@ import se.sundsvall.contractloader.integration.db.model.ArrendekontraktEntity;
 import se.sundsvall.contractloader.integration.db.model.ArrendekontraktsradEntity;
 import se.sundsvall.contractloader.integration.db.model.FastighetEntity;
 import se.sundsvall.contractloader.integration.db.model.NoteringEntity;
+import se.sundsvall.contractloader.integration.estateinfo.EstateInfoClient;
 import se.sundsvall.contractloader.integration.party.PartyClient;
 import se.sundsvall.contractloader.service.Constants;
 
@@ -64,6 +67,9 @@ class ContractProviderTest {
 
 	@Mock
 	private PartyClient partyClient;
+
+	@Mock
+	private EstateInfoClient estateInfoClient;
 
 	@InjectMocks
 	private ContractProvider contractProvider;
@@ -74,6 +80,7 @@ class ContractProviderTest {
 		final var arrendekontraktEntity = createArrendekontrakt();
 
 		when(partyClient.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
+		when(estateInfoClient.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
 
 		// Call
 		final Contract contract = contractProvider.toContract(arrendekontraktEntity);
@@ -95,7 +102,7 @@ class ContractProviderTest {
 				Notice::getPeriodOfNotice,
 				generated.se.sundsvall.contract.Notice::getUnit)
 			.containsExactlyInAnyOrder(
-				tuple(Party.LESSOR, 6, YEARS),
+				tuple(Party.LESSOR, 6, MONTHS),
 				tuple(Party.LESSEE, 10, YEARS));
 		assertThat(contract.getArea()).isEqualTo(7780);
 

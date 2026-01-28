@@ -28,3 +28,10 @@ integration:
     client-secret: the-client-secret
     connectTimeout: 10
     readTimeout: 20
+  estateinfo:
+    url: http://localhost:${wiremock.server.port:}/estateinfo
+    token-uri: http://localhost:${wiremock.server.port:}/api-gateway/token
+    client-id: the-client-id
+    client-secret: the-client-secret
+    connectTimeout: 10
+    readTimeout: 20
