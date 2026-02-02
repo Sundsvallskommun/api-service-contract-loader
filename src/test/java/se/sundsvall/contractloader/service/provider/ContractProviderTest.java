@@ -12,6 +12,7 @@ import static generated.se.sundsvall.contract.StakeholderRole.PRIMARY_BILLING_PA
 import static generated.se.sundsvall.contract.StakeholderType.MUNICIPALITY;
 import static generated.se.sundsvall.contract.StakeholderType.ORGANIZATION;
 import static generated.se.sundsvall.contract.StakeholderType.PERSON;
+import static generated.se.sundsvall.contract.Status.ACTIVE;
 import static generated.se.sundsvall.contract.Status.TERMINATED;
 import static generated.se.sundsvall.contract.TimeUnit.MONTHS;
 import static generated.se.sundsvall.contract.TimeUnit.YEARS;
@@ -191,6 +192,61 @@ class ContractProviderTest {
 		// Is Organization and therefore uses org number of the second call
 		verify(partyClient, times(2)).getPartyId(anyString(), any(), anyString());
 		verifyNoMoreInteractions(partyClient);
+	}
+
+	@Test
+	void toContractWhenStatusIsActiveEndShouldBeNull() {
+		// Arrange - create contract without sistaDebiteringsdatum (will be ACTIVE)
+		final var arrendekontraktEntity = createArrendekontrakt()
+			.withSistaDebiteringsdatum(null);
+
+		when(partyClient.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
+		when(estateInfoClient.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
+
+		// Act
+		final Contract contract = contractProvider.toContract(arrendekontraktEntity);
+
+		// Assert
+		assertThat(contract).isNotNull();
+		assertThat(contract.getStatus()).isEqualTo(ACTIVE);
+		assertThat(contract.getEnd()).isNull();
+		assertThat(contract.getStart()).isEqualTo(arrendekontraktEntity.getFromDatum());
+	}
+
+	@Test
+	void toContractWhenStatusIsActiveDueToFutureBillingDateEndShouldBeNull() {
+		// Arrange - create contract with future sistaDebiteringsdatum (will be ACTIVE)
+		final var arrendekontraktEntity = createArrendekontrakt()
+			.withSistaDebiteringsdatum(LocalDate.now().plusYears(1));
+
+		when(partyClient.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
+		when(estateInfoClient.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
+
+		// Act
+		final Contract contract = contractProvider.toContract(arrendekontraktEntity);
+
+		// Assert
+		assertThat(contract).isNotNull();
+		assertThat(contract.getStatus()).isEqualTo(ACTIVE);
+		assertThat(contract.getEnd()).isNull();
+	}
+
+	@Test
+	void toContractWhenStatusIsTerminatedEndShouldBeSet() {
+		// Arrange - create contract with past sistaDebiteringsdatum (will be TERMINATED)
+		final var arrendekontraktEntity = createArrendekontrakt()
+			.withSistaDebiteringsdatum(LocalDate.now().minusDays(1));
+
+		when(partyClient.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
+		when(estateInfoClient.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
+
+		// Act
+		final Contract contract = contractProvider.toContract(arrendekontraktEntity);
+
+		// Assert
+		assertThat(contract).isNotNull();
+		assertThat(contract.getStatus()).isEqualTo(TERMINATED);
+		assertThat(contract.getEnd()).isEqualTo(arrendekontraktEntity.getTomDatum());
 	}
 
 	@Test
