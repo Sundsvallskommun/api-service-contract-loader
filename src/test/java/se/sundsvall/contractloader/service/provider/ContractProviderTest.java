@@ -92,7 +92,7 @@ class ContractProviderTest {
 		assertThat(contract.getType()).isEqualTo(LEASE_AGREEMENT);
 		assertThat(contract.getLeaseType()).isEqualTo(USUFRUCT_MOORING);
 		assertThat(contract.getStatus()).isEqualTo(TERMINATED);
-		assertThat(contract.getDuration()).isEqualTo(new Duration().leaseDuration(0).unit(YEARS));
+		assertThat(contract.getDuration()).isEqualTo(new Duration().leaseDuration(1).unit(YEARS));
 		assertThat(contract.getInvoicing()).isEqualTo(new Invoicing().invoicedIn(ADVANCE).invoiceInterval(YEARLY));
 		assertThat(contract.getStart()).isEqualTo(arrendekontraktEntity.getFromDatum());
 		assertThat(contract.getEnd()).isEqualTo(arrendekontraktEntity.getTomDatum());

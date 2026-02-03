@@ -448,7 +448,7 @@ public final class ContractProvider {
 		if (isNull(fromDate) || isNull(toDate)) {
 			return null;
 		}
-		final var durationInYears = ChronoUnit.YEARS.between(fromDate, toDate);
+		final var durationInYears = ChronoUnit.YEARS.between(fromDate, toDate.plusDays(1));
 		return new Duration()
 			.leaseDuration(Math.toIntExact(durationInYears))
 			.unit(YEARS);
