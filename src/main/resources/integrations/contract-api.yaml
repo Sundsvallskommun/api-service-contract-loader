@@ -1,13 +1,11 @@
 openapi: 3.1.0
 info:
   title: Contracts
-  contact: {}
+  contact: { }
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "4.0"
-servers:
-  - url: /
+  version: "5.0"
 tags:
   - name: Contract attachments
     description: Contract attachment resources
@@ -688,13 +686,13 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties: {}
-        status:
-          $ref: "#/components/schemas/StatusType"
+          additionalProperties: { }
         title:
           type: string
         detail:
           type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
     StatusType:
       type: object
       properties:
@@ -911,6 +909,8 @@ components:
       enum:
         - LEASE_AGREEMENT
         - PURCHASE_AGREEMENT
+        - LAND_LEASE_PUBLIC
+        - SHORT_TERM_LEASE_AGREEMENT
     Crs:
       type: object
       properties:
@@ -921,7 +921,7 @@ components:
             - link
         properties:
           type: object
-          additionalProperties: {}
+          additionalProperties: { }
     Duration:
       type: object
       description: Duration
@@ -981,9 +981,16 @@ components:
     Feature:
       type: object
       properties:
+        crs:
+          $ref: "#/components/schemas/Crs"
+        bbox:
+          type: array
+          items:
+            type: number
+            format: double
         properties:
           type: object
-          additionalProperties: {}
+          additionalProperties: { }
         geometry:
           oneOf:
             - $ref: "#/components/schemas/Feature"
@@ -995,13 +1002,6 @@ components:
             - $ref: "#/components/schemas/MultiPolygon"
             - $ref: "#/components/schemas/Point"
             - $ref: "#/components/schemas/Polygon"
-        crs:
-          $ref: "#/components/schemas/Crs"
-        bbox:
-          type: array
-          items:
-            type: number
-            format: double
         id:
           type: string
     FeatureCollection:
@@ -1139,7 +1139,6 @@ components:
       type: string
       description: Lease type
       enum:
-        - LAND_LEASE_PUBLIC
         - LAND_LEASE_RESIDENTIAL
         - SITE_LEASE_COMMERCIAL
         - USUFRUCT_MOORING
@@ -1268,6 +1267,12 @@ components:
           description: The unit of the periodOfNotice value
           examples:
             - MONTHS
+        noticeDate:
+          type: string
+          format: date
+          description: The date of notice
+          examples:
+            - 2024-06-15
       required:
         - periodOfNotice
         - unit
@@ -1298,6 +1303,7 @@ components:
       enum:
         - LESSOR
         - LESSEE
+        - ALL
     Point:
       allOf:
         - $ref: "#/components/schemas/GeoJsonObject"
@@ -1499,7 +1505,7 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties: {}
+          additionalProperties: { }
         detail:
           type: string
         suppressed:
@@ -1538,7 +1544,7 @@ components:
     ThrowableProblem:
       type: object
       properties:
-        cause: {}
+        cause: { }
         stackTrace:
           type: array
           items:
@@ -1571,13 +1577,13 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties: {}
-        status:
-          $ref: "#/components/schemas/StatusType"
+          additionalProperties: { }
         title:
           type: string
         detail:
           type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
         suppressed:
           type: array
           items:
@@ -1686,4 +1692,4 @@ components:
           description: Total amount of pages based on provided search parameters
           example: 23
           readOnly: true
-  securitySchemes: {}
+  securitySchemes: { }

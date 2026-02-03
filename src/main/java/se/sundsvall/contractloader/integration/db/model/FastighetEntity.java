@@ -13,6 +13,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.Objects;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "fastighetsbas_fastighet")
@@ -94,6 +96,7 @@ public class FastighetEntity {
 		insertable = false,
 		updatable = false,
 		foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+	@NotFound(action = NotFoundAction.IGNORE)
 	private NoteringEntity notering;
 
 	public static FastighetEntity create() {

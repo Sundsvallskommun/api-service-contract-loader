@@ -30,6 +30,8 @@ public final class Constants {
 	public static final String JAKTARRENDE = "JAKTARRENDE";
 	public static final String LAGENHETSARRENDE_PARKERING = "LÄGENHETSARRENDE PARKERING";
 	public static final String JORDBRUKSARRENDE = "JORDBRUKSARRENDE";
+	public static final String KORTTIDSARRENDE = "Korttidsarrende";
+	public static final String KOPEAVTAL = "Köpeavtal";
 
 	public static final String INVOICE_INFO_GROUP_NAME = "InvoiceInfo";
 	public static final String INVOICE_INFO_MARKUP_PARAMETER = "markup";
@@ -52,14 +54,12 @@ public final class Constants {
 		Map.entry(BATPLATS, USUFRUCT_MOORING),
 		Map.entry(BOSTADSARRENDE_JUNIBOSAND, LAND_LEASE_RESIDENTIAL),
 		Map.entry(BOSTADSARRENDE, LAND_LEASE_RESIDENTIAL),
-		Map.entry(ALLMAN_PLATSUPPLATELSE, LAND_LEASE_PUBLIC),
 		Map.entry(LAGENHETSARRENDE, LAND_LEASE_MISC),
 		Map.entry(NYTTJANDERATT, USUFRUCT_MISC),
 		Map.entry(ANLAGAGGNINGSARRENDE, SITE_LEASE_COMMERCIAL),
 		Map.entry(HYRESOBJECT, OBJECT_LEASE),
 		Map.entry(OVRIG_AVGIFT, OTHER_FEE),
 		Map.entry(JAKTARRENDE, USUFRUCT_HUNTING),
-		Map.entry(LAGENHETSARRENDE_PARKERING, LAND_LEASE_MISC),
 		Map.entry(JORDBRUKSARRENDE, USUFRUCT_FARMING));
 
 	public static final Map<String, String> additionalInformationMapping = Map.ofEntries(

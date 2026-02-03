@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.FAILED;
 
@@ -62,6 +63,7 @@ class ExportServiceTest {
 		verify(arrendekontraktRepositoryMock).save(arrendekontrakt2);
 		verify(contractProviderMock, times(2)).toContract(any(ArrendekontraktEntity.class));
 		verify(contractClientMock, times(2)).createContract(anyString(), any(Contract.class));
+		verifyNoMoreInteractions(arrendekontraktRepositoryMock, contractProviderMock, contractClientMock);
 	}
 
 	@Test
@@ -87,5 +89,6 @@ class ExportServiceTest {
 		verify(arrendekontraktRepositoryMock).save(arrendekontrakt2);
 		verify(contractProviderMock, times(2)).toContract(any(ArrendekontraktEntity.class));
 		verify(contractClientMock).createContract(anyString(), any(Contract.class));
+		verifyNoMoreInteractions(arrendekontraktRepositoryMock, contractProviderMock, contractClientMock);
 	}
 }

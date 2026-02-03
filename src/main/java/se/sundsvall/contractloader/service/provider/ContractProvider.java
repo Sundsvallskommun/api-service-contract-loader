@@ -1,12 +1,14 @@
 package se.sundsvall.contractloader.service.provider;
 
 import static generated.se.sundsvall.contract.AddressType.POSTAL_ADDRESS;
+import static generated.se.sundsvall.contract.ContractType.LAND_LEASE_PUBLIC;
 import static generated.se.sundsvall.contract.ContractType.LEASE_AGREEMENT;
 import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
-import static generated.se.sundsvall.contract.LeaseType.OTHER_FEE;
 import static generated.se.sundsvall.contract.Party.LESSEE;
 import static generated.se.sundsvall.contract.StakeholderType.MUNICIPALITY;
 import static generated.se.sundsvall.contract.StakeholderType.OTHER;
+import static generated.se.sundsvall.contract.Status.ACTIVE;
+import static generated.se.sundsvall.contract.Status.TERMINATED;
 import static generated.se.sundsvall.contract.TimeUnit.MONTHS;
 import static generated.se.sundsvall.contract.TimeUnit.YEARS;
 import static generated.se.sundsvall.party.PartyType.ENTERPRISE;
@@ -19,6 +21,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.zalando.problem.Status.PRECONDITION_FAILED;
+import static se.sundsvall.contractloader.service.Constants.ALLMAN_PLATSUPPLATELSE;
 import static se.sundsvall.contractloader.service.Constants.CATEGORY_PERSON;
 import static se.sundsvall.contractloader.service.Constants.CONTRACT_DETAILS_CONTRACT_DATE_PARAMETER;
 import static se.sundsvall.contractloader.service.Constants.CONTRACT_DETAILS_CONTRACT_NAME_PARAMETER;
@@ -49,6 +52,7 @@ import static se.sundsvall.contractloader.service.Constants.stakeholderTypeMappi
 
 import generated.se.sundsvall.contract.Address;
 import generated.se.sundsvall.contract.Contract;
+import generated.se.sundsvall.contract.ContractType;
 import generated.se.sundsvall.contract.Duration;
 import generated.se.sundsvall.contract.Extension;
 import generated.se.sundsvall.contract.ExtraParameterGroup;
@@ -84,6 +88,7 @@ import se.sundsvall.contractloader.integration.db.model.ArrendekontraktEntity;
 import se.sundsvall.contractloader.integration.db.model.ArrendekontraktsradEntity;
 import se.sundsvall.contractloader.integration.db.model.FastighetEntity;
 import se.sundsvall.contractloader.integration.db.model.NoteringEntity;
+import se.sundsvall.contractloader.integration.estateinfo.EstateInfoClient;
 import se.sundsvall.contractloader.integration.party.PartyClient;
 import se.sundsvall.contractloader.service.Constants;
 
@@ -97,9 +102,11 @@ public final class ContractProvider {
 	private static final double ONE = 1;
 	private static final String MONTH = "månad";
 	private final PartyClient partyClient;
+	private final EstateInfoClient estateInfoClient;
 
-	public ContractProvider(PartyClient partyClient) {
+	public ContractProvider(PartyClient partyClient, EstateInfoClient estateInfoClient) {
 		this.partyClient = partyClient;
+		this.estateInfoClient = estateInfoClient;
 	}
 
 	public Contract toContract(final ArrendekontraktEntity arrendekontraktEntity) {
@@ -108,7 +115,7 @@ public final class ContractProvider {
 				.externalReferenceId(entity.getArrendekontrakt())
 				.leaseType(toLeaseType(entity.getKontraktstyp()))
 				.status(toStatus(entity))
-				.type(LEASE_AGREEMENT)
+				.type(toContractType(entity.getKontraktstyp()))
 				.extraParameters(toExtraParameterGroups(entity))
 				.stakeholders(toStakeholders(entity.getArrendatorer()))
 				.propertyDesignations(getPropertyDesignations(entity.getFastighet()))
@@ -116,24 +123,35 @@ public final class ContractProvider {
 				.fees(toFees(entity.getArrendekontraktsrader(), entity.getKontraktstyp()))
 				.invoicing(toInvoicing(entity))
 				.start(entity.getFromDatum())
-				.end(entity.getTomDatum())
+				.end(toEnd(entity))
 				.extension(toExtension(entity))
 				.notices(toNotices(entity))
 				.area(toArea(entity.getKontraktsarea())))
 			.orElse(null);
 	}
 
+	private static ContractType toContractType(String contractType) {
+		return contractType != null && contractType.equals(ALLMAN_PLATSUPPLATELSE)
+			? LAND_LEASE_PUBLIC
+			: LEASE_AGREEMENT;
+	}
+
 	private static LeaseType toLeaseType(String contractType) {
-		return ofNullable(Constants.leaseTypeMapping.get(contractType)).orElse(OTHER_FEE);
+		return Constants.leaseTypeMapping.get(contractType);
 	}
 
 	private Status toStatus(final ArrendekontraktEntity arrendekontraktEntity) {
-		if (isNull(arrendekontraktEntity.getTomDatum()) || arrendekontraktEntity.getTomDatum().isAfter(LocalDate.now())) {
-			return Status.ACTIVE;
-		} else if (arrendekontraktEntity.getTomDatum().isBefore(LocalDate.now()) || Objects.nonNull(arrendekontraktEntity.getSistaDebiteringsdatum())) {
-			return Status.TERMINATED;
+		if (Objects.nonNull(arrendekontraktEntity.getSistaDebiteringsdatum()) && arrendekontraktEntity.getSistaDebiteringsdatum().isBefore(LocalDate.now())) {
+			return TERMINATED;
 		}
-		return Status.ACTIVE;
+		return ACTIVE;
+	}
+
+	private LocalDate toEnd(final ArrendekontraktEntity arrendekontraktEntity) {
+		if (toStatus(arrendekontraktEntity) == TERMINATED) {
+			return arrendekontraktEntity.getTomDatum();
+		}
+		return null;
 	}
 
 	private Invoicing toInvoicing(final ArrendekontraktEntity arrendekontraktEntity) {
@@ -189,18 +207,29 @@ public final class ContractProvider {
 	private Notice toLessorNotice(ArrendekontraktEntity arrendekontraktEntity) {
 		return new Notice()
 			.periodOfNotice(ofNullable(arrendekontraktEntity.getUppsTidHyresvard()).map(this::toInteger).orElse(null))
-			.unit(ofNullable(arrendekontraktEntity.getUppsTidHyresvard())
+			.unit(ofNullable(arrendekontraktEntity.getEnhetUppsTidHyresvard())
 				// There are only "månad" and "år" in the data
 				.map(unit -> MONTH.equals(unit) ? MONTHS : YEARS)
 				.orElse(null))
 			.party(Party.LESSOR);
 	}
 
-	private static List<PropertyDesignation> getPropertyDesignations(final FastighetEntity fastighetEntity) {
+	private List<PropertyDesignation> getPropertyDesignations(final FastighetEntity fastighetEntity) {
 		return ofNullable(fastighetEntity)
 			.map(FastighetEntity::getFastighetsbeteckning)
 			.filter(not(String::isBlank))
-			.map(fastighetsbeteckning -> List.of(new PropertyDesignation().name(fastighetsbeteckning)))
+			.map(designation -> {
+				var propertyDesignation = new PropertyDesignation().name(designation);
+				try {
+					var estates = estateInfoClient.getEstateByDesignation(MUNICIPALITY_ID, designation);
+					if (estates != null && !estates.isEmpty()) {
+						propertyDesignation.district(estates.getFirst().getDistrictname());
+					}
+				} catch (Exception e) {
+					LOGGER.warn("Could not retrieve district for designation {}", designation, e);
+				}
+				return List.of(propertyDesignation);
+			})
 			.orElse(Collections.emptyList());
 	}
 
@@ -213,24 +242,32 @@ public final class ContractProvider {
 		return extraParameterGroups;
 	}
 
-	private ExtraParameterGroup createInvoiceInfoGroup(final ArrendekontraktEntity arrendekontraktEntity) {
+	private ExtraParameterGroup createInvoiceInfoGroup(
+		final ArrendekontraktEntity arrendekontraktEntity) {
+
 		var parameters = new LinkedHashMap<String, String>();
 
-		final var article = ofNullable(arrendekontraktEntity.getArrendekontraktsrader()).orElse(emptyList())
+		final var article = ofNullable(arrendekontraktEntity.getArrendekontraktsrader())
+			.orElse(emptyList())
 			.stream()
 			.filter(row -> Objects.nonNull(row.getDebiterasFromDatum()))
 			.max(Comparator.comparing(ArrendekontraktsradEntity::getDebiterasFromDatum))
 			.map(ArrendekontraktsradEntity::getAvitext);
 
-		ofNullable(arrendekontraktEntity.getMarkning()).filter(not(String::isBlank)).ifPresent(marking -> parameters.put(INVOICE_INFO_MARKUP_PARAMETER, marking));
-		article.filter(not(String::isBlank)).ifPresent(article1 -> parameters.put(INVOICE_INFO_ARTICLE_PARAMETER, article1));
+		ofNullable(arrendekontraktEntity.getMarkning())
+			.filter(not(String::isBlank))
+			.ifPresent(marking -> parameters.put(INVOICE_INFO_MARKUP_PARAMETER, marking));
+		article.filter(not(String::isBlank))
+			.ifPresent(a -> parameters.put(INVOICE_INFO_ARTICLE_PARAMETER, a));
 
 		return new ExtraParameterGroup()
 			.name(INVOICE_INFO_GROUP_NAME)
 			.parameters(parameters);
 	}
 
-	private ExtraParameterGroup createContractDetailsGroup(final ArrendekontraktEntity arrendekontraktEntity) {
+	private ExtraParameterGroup createContractDetailsGroup(
+		final ArrendekontraktEntity arrendekontraktEntity) {
+
 		var parameters = new LinkedHashMap<String, String>();
 
 		final var fileName = ofNullable(arrendekontraktEntity.getFastighet())
@@ -238,23 +275,44 @@ public final class ContractProvider {
 			.map(NoteringEntity::getFilnamn)
 			.filter(not(String::isBlank));
 
-		parameters.put(CONTRACT_DETAILS_MIGRATED_FROM_PARAMETER, CONTRACT_DETAILS_MIGRATED_FROM_VALUE);
-		ofNullable(arrendekontraktEntity.getArrendekontrakt()).filter(not(String::isBlank)).ifPresent(contractNumber -> parameters.put(CONTRACT_DETAILS_CONTRACT_NUMBER_PARAMETER, contractNumber));
-		ofNullable(arrendekontraktEntity.getKontraktsnamn()).filter(not(String::isBlank)).ifPresent(contractName -> parameters.put(CONTRACT_DETAILS_CONTRACT_NAME_PARAMETER, contractName));
-		ofNullable(arrendekontraktEntity.getHuvudkontrakt()).filter(not(String::isBlank)).ifPresent(mainContractReference -> parameters.put(CONTRACT_DETAILS_MAIN_CONTRACT_REFERENCE_PARAMETER, mainContractReference));
-		ofNullable(arrendekontraktEntity.getKontraktsdatum()).ifPresent(contractDate -> parameters.put(CONTRACT_DETAILS_CONTRACT_DATE_PARAMETER, contractDate.format(DATE_FORMAT)));
-		ofNullable(arrendekontraktEntity.getSistaDebiteringsdatum()).ifPresent(finalBillingDate -> parameters.put(CONTRACT_DETAILS_FINAL_BILLING_DATE_PARAMETER, finalBillingDate.format(DATE_FORMAT)));
-		ofNullable(arrendekontraktEntity.getUppsagtDatum()).ifPresent(terminationDate -> parameters.put(CONTRACT_DETAILS_TERMINATION_DATE_PARAMETER, terminationDate.format(DATE_FORMAT)));
-		ofNullable(arrendekontraktEntity.getUppsagtAv()).filter(not(String::isBlank)).ifPresent(terminatedBy -> parameters.put(CONTRACT_DETAILS_TERMINATED_BY_PARAMETER, terminatedBy));
-		ofNullable(arrendekontraktEntity.getKontraktstyp()).filter(not(String::isBlank)).ifPresent(contractType -> parameters.put(CONTRACT_DETAILS_ORIGINAL_CONTRACT_TYPE_PARAMETER, contractType));
-		fileName.ifPresent(file -> parameters.put(CONTRACT_DETAILS_ORIGINAL_FILE_PARAMETER, file));
+		parameters.put(
+			CONTRACT_DETAILS_MIGRATED_FROM_PARAMETER,
+			CONTRACT_DETAILS_MIGRATED_FROM_VALUE);
+		ofNullable(arrendekontraktEntity.getArrendekontrakt())
+			.filter(not(String::isBlank))
+			.ifPresent(n -> parameters.put(CONTRACT_DETAILS_CONTRACT_NUMBER_PARAMETER, n));
+		ofNullable(arrendekontraktEntity.getKontraktsnamn())
+			.filter(not(String::isBlank))
+			.ifPresent(n -> parameters.put(CONTRACT_DETAILS_CONTRACT_NAME_PARAMETER, n));
+		ofNullable(arrendekontraktEntity.getHuvudkontrakt())
+			.filter(not(String::isBlank))
+			.ifPresent(r -> parameters.put(CONTRACT_DETAILS_MAIN_CONTRACT_REFERENCE_PARAMETER, r));
+		ofNullable(arrendekontraktEntity.getKontraktsdatum())
+			.ifPresent(d -> parameters.put(
+				CONTRACT_DETAILS_CONTRACT_DATE_PARAMETER, d.format(DATE_FORMAT)));
+		ofNullable(arrendekontraktEntity.getSistaDebiteringsdatum())
+			.ifPresent(d -> parameters.put(
+				CONTRACT_DETAILS_FINAL_BILLING_DATE_PARAMETER, d.format(DATE_FORMAT)));
+		ofNullable(arrendekontraktEntity.getUppsagtDatum())
+			.ifPresent(d -> parameters.put(
+				CONTRACT_DETAILS_TERMINATION_DATE_PARAMETER, d.format(DATE_FORMAT)));
+		ofNullable(arrendekontraktEntity.getUppsagtAv())
+			.filter(not(String::isBlank))
+			.ifPresent(t -> parameters.put(CONTRACT_DETAILS_TERMINATED_BY_PARAMETER, t));
+		ofNullable(arrendekontraktEntity.getKontraktstyp())
+			.filter(not(String::isBlank))
+			.ifPresent(t -> parameters.put(CONTRACT_DETAILS_ORIGINAL_CONTRACT_TYPE_PARAMETER, t));
+		fileName
+			.ifPresent(f -> parameters.put(CONTRACT_DETAILS_ORIGINAL_FILE_PARAMETER, f));
 
 		return new ExtraParameterGroup()
 			.name(CONTRACT_DETAILS_GROUP_NAME)
 			.parameters(parameters);
 	}
 
-	private List<Stakeholder> toStakeholders(final List<ArrendatorEntity> arrendatorEntities) {
+	private List<Stakeholder> toStakeholders(
+		final List<ArrendatorEntity> arrendatorEntities) {
+
 		var stakeholders = new ArrayList<Stakeholder>();
 		stakeholders.add(createLessorStakeholder());
 		if (arrendatorEntities != null) {
@@ -263,7 +321,6 @@ public final class ContractProvider {
 				.toList());
 		}
 		return stakeholders;
-
 	}
 
 	private Stakeholder createLessorStakeholder() {
@@ -282,37 +339,50 @@ public final class ContractProvider {
 				.addValuesItem(ORGANIZATION_NAME_EXTENSION_VALUE)));
 	}
 
-	private Stakeholder createStakeholder(final ArrendatorEntity arrendatorEntity) {
+	private Stakeholder createStakeholder(
+		final ArrendatorEntity arrendatorEntity) {
+
+		final var type = ofNullable(stakeholderTypeMapping.get(arrendatorEntity.getKategori()))
+			.orElse(OTHER);
+
 		return new Stakeholder()
-			.type(ofNullable(stakeholderTypeMapping.get(arrendatorEntity.getKategori())).orElse(OTHER))
+			.type(type)
 			.roles(getRoles(arrendatorEntity))
 			.organizationName(getOrganizationName(arrendatorEntity))
 			.partyId(getPartyId(arrendatorEntity.getPersonOrgNr()))
-			.emailAddress(ofNullable(arrendatorEntity.getEpost()).filter(not(String::isBlank)).orElse(null))
+			.emailAddress(getNullableString(arrendatorEntity.getEpost()))
 			.phoneNumber(getPhoneNumber(arrendatorEntity))
-			.firstName(ofNullable(arrendatorEntity.getFornamn()).filter(not(String::isBlank)).orElse(null))
-			.lastName(ofNullable(arrendatorEntity.getEfternamn()).filter(not(String::isBlank)).orElse(null))
+			.firstName(getNullableString(arrendatorEntity.getFornamn()))
+			.lastName(getNullableString(arrendatorEntity.getEfternamn()))
 			.address(new Address()
 				.type(POSTAL_ADDRESS)
-				.careOf(ofNullable(arrendatorEntity.getAvdelning()).filter(not(String::isBlank)).orElse(null))
-				.postalCode(ofNullable(arrendatorEntity.getPostnummer()).filter(not(String::isBlank)).orElse(null))
+				.careOf(getNullableString(arrendatorEntity.getAvdelning()))
+				.postalCode(getNullableString(arrendatorEntity.getPostnummer()))
 				.streetAddress(getStreetAddress(arrendatorEntity))
-				.town(ofNullable(arrendatorEntity.getOrt()).filter(not(String::isBlank)).orElse(null))
-				.country(ofNullable(arrendatorEntity.getLand()).filter(not(String::isBlank)).orElse(null)));
-
+				.town(getNullableString(arrendatorEntity.getOrt()))
+				.country(getNullableString(arrendatorEntity.getLand())));
 	}
 
-	private List<StakeholderRole> getRoles(ArrendatorEntity arrendatorEntity) {
+	private List<StakeholderRole> getRoles(
+		final ArrendatorEntity arrendatorEntity) {
+
 		if (ORDERING_FIRST.equals(arrendatorEntity.getOrdning())) {
 			return List.of(StakeholderRole.LESSEE, StakeholderRole.PRIMARY_BILLING_PARTY);
 		}
 		return List.of(StakeholderRole.LESSEE, StakeholderRole.CONTACT_PERSON);
 	}
 
+	private String getNullableString(final String value) {
+		return ofNullable(value).filter(not(String::isBlank)).orElse(null);
+	}
+
 	private String getPhoneNumber(final ArrendatorEntity arrendatorEntity) {
-		final var mobileNumber = ofNullable(arrendatorEntity.getTelefonMobil()).orElse("");
-		final var homeNumber = ofNullable(arrendatorEntity.getTelefonHem()).orElse("");
-		final var workNumber = ofNullable(arrendatorEntity.getTelefonArbete()).orElse("");
+		final var mobileNumber = ofNullable(arrendatorEntity.getTelefonMobil())
+			.orElse("");
+		final var homeNumber = ofNullable(arrendatorEntity.getTelefonHem())
+			.orElse("");
+		final var workNumber = ofNullable(arrendatorEntity.getTelefonArbete())
+			.orElse("");
 
 		var phoneNumber = "";
 		if (!mobileNumber.isBlank()) {
@@ -378,7 +448,7 @@ public final class ContractProvider {
 		if (isNull(fromDate) || isNull(toDate)) {
 			return null;
 		}
-		final var durationInYears = ChronoUnit.YEARS.between(fromDate, toDate);
+		final var durationInYears = ChronoUnit.YEARS.between(fromDate, toDate.plusDays(1));
 		return new Duration()
 			.leaseDuration(Math.toIntExact(durationInYears))
 			.unit(YEARS);

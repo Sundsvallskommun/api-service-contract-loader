@@ -49,8 +49,7 @@ public class ExportService {
 			if (!pageResult.hasNext()) {
 				break;
 			}
-			page++;
-			pageResult = arrendekontraktRepository.findAll(PageRequest.of(page, PAGE_SIZE));
+			pageResult = arrendekontraktRepository.findBySendStatusIsNullOrSendStatus(FAILED, PageRequest.of(0, PAGE_SIZE));
 		}
 	}
 }

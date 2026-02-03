@@ -34,3 +34,8 @@ integration:
     token-uri: token.uri
     client-id: the-client-id
     client-secret: the-client-secret
+  estateinfo:
+    url: estateinfo.url
+    token-uri: token.uri
+    client-id: the-client-id
+    client-secret: the-client-secret
