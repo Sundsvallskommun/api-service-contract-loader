@@ -1,0 +1,437 @@
+openapi: 3.0.1
+info:
+  description: Test API from the GIS department
+  version: "2.0"
+  title: EstateInfo
+tags:
+  - name: adresser
+  - name: fastigheter
+  - name: fastighetsdata
+paths:
+  /estate-data:
+    get:
+      tags:
+        - fastighetsdata
+      description: Get information about estate.
+      operationId: getEstateData
+      parameters:
+        - name: objectidentifier
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Responds with the title deeds and owner etc
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstateData"
+        "400":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /{municipalityId}/estate-by-designation:
+    get:
+      tags:
+        - fastigheter
+      description: Get information about estate.
+      operationId: getEstateIdByDesignation
+      parameters:
+        - name: municipalityId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "[0-2]{1}[0-9]{3}"
+        - name: designation
+          in: query
+          description: An designation to search for (starts with).
+          required: true
+          schema:
+            type: string
+        - name: maxHits
+          in: query
+          description: The maximal number of hits returned. Defaults to 100.
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: The status of the estate. Defaults to "gällande".
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Responds with a list of designations and their unique identifier
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EstateDesignationResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /{municipalityId}/estate-by-address:
+    get:
+      tags:
+        - adresser
+      description: Get information about estate by searching on address.
+      operationId: getEstateIdByAddress
+      parameters:
+        - name: municipalityId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "[0-2]{1}[0-9]{3}"
+        - name: address
+          in: query
+          description: An address to search for (starts with).
+          required: true
+          schema:
+            type: string
+        - name: maxHits
+          in: query
+          description: The maximal number of hits returned. Defaults to 100
+          required: false
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: The status of the address. Defaults to "Gällande"
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Responds with a list of addresses and their unique estate identifier
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EstateAddressResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: array
+          description: The error message.
+          items:
+            $ref: "#/components/schemas/Error"
+    Error:
+      type: object
+      properties:
+        path:
+          type: string
+          description: The path of the error.
+        errorCode:
+          type: string
+          description: The error code.
+        message:
+          type: string
+          description: A clearification on the error.
+        location:
+          type: string
+          description: The location of the error.
+    EstateDesignationResponse:
+      type: object
+      properties:
+        address:
+          type: string
+          description: The adress of the estate.
+        designation:
+          type: string
+          description: The designation of the estate.
+        objectidentifier:
+          type: string
+          description: The unique identifier of the estate.
+        districtname:
+          type: string
+          description: The district name of the estate.
+        districtcode:
+          type: string
+          description: The district code of the estate.
+    EstateAddressResponse:
+      type: object
+      properties:
+        address:
+          type: string
+          description: The adress of the estate.
+        designation:
+          type: string
+          description: The designation of the estate.
+        objectidentifier:
+          type: string
+          description: The unique identifier of the estate.
+        districtname:
+          type: string
+          description: The district name of the estate.
+        districtcode:
+          type: string
+          description: The district code of the estate.
+    EstateData:
+      type: object
+      properties:
+        designation:
+          type: string
+          description: The designation of the estate.
+        objectidentifier:
+          type: string
+          description: The unique identifier of the estate.
+        totalArea:
+          type: integer
+          description: The total area of the estate.
+        totalAreaWater:
+          type: integer
+          description: The total area of the estate which are over water.
+        totalAreaLand:
+          type: integer
+          description: The total area of the estate which are over land.
+        ownership:
+          type: array
+          description: The current ownership of the estate.
+          items:
+            $ref: "#/components/schemas/TitleDeed"
+        mortage:
+          type: array
+          description: The mortages of the estate.
+          items:
+            $ref: "#/components/schemas/Mortage"
+        previousOwnership:
+          type: array
+          description: The previous ownerships of the estate.
+          items:
+            $ref: "#/components/schemas/TitleDeed"
+        ownerChanges:
+          type: array
+          description: The changes of owning of estate.
+          items:
+            $ref: "#/components/schemas/OwnerChanges"
+        actions:
+          type: array
+          description: The actions performed on the estate.
+          items:
+            $ref: "#/components/schemas/Actions"
+    TitleDeed:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of ownership.
+        objectidentifier:
+          type: string
+          description: The unique identifier of the ownership.
+        enrollmentDay:
+          type: string
+          description: The date of enrollment.
+        decision:
+          type: string
+          description: The decision of the ownership.
+        share:
+          type: string
+          description: The share of ownership.
+        diaryNumber:
+          type: array
+          description: References to dairy.
+          items:
+            type: string
+        versionValidFrom:
+          type: string
+          description: From when the ownership is valid.
+        owner:
+          $ref: "#/components/schemas/Owner"
+    Owner:
+      type: object
+      description: The owners of a estate.
+      properties:
+        idnumber:
+          type: string
+          description: The id number of owner i.e. organisation number or person number.
+        name:
+          type: string
+          description: The name of owner person or organisation.
+        coAddress:
+          type: string
+          description: The c/o address of owner person or organisation.
+        address:
+          type: string
+          description: The address of owner person or organisation.
+        postalCode:
+          type: string
+          description: The postal code of owner person or organisation.
+        city:
+          type: string
+          description: The postal city of owner person or organisation.
+    Mortage:
+      type: object
+      properties:
+        objectidentifier:
+          type: string
+          description: The unique identifier of the mortage.
+        type:
+          type: string
+          description: The type of burdens.
+        priorityOrder:
+          type: integer
+          description: The order of burdens on the estate.
+        enrollmentDay:
+          type: string
+          description: The date of enrollment.
+        decision:
+          type: string
+          description: The decision of the mortage.
+        diaryNumber:
+          type: array
+          description: References to dairy.
+          items:
+            type: string
+        mortageType:
+          type: string
+          description: The type of the mortage.
+        mortageAmount:
+          $ref: "#/components/schemas/MortageAmount"
+    MortageAmount:
+      type: object
+      description: The amount of the mortage.
+      properties:
+        currency:
+          type: string
+          description: The currency the mortage amount.
+        sum:
+          type: integer
+          description: The mortage amount.
+    OwnerChanges:
+      type: object
+      properties:
+        objectidentifier:
+          type: string
+          description: The unique identifier of the ownership.
+        acquisition:
+          type: array
+          description: The acquisition.
+          items:
+            $ref: "#/components/schemas/Acquisition"
+        purchasePrice:
+          $ref: "#/components/schemas/PurchasePrice"
+        transfer:
+          type: array
+          description: The transfer of a acquisition.
+          items:
+            $ref: "#/components/schemas/Transfer"
+    PurchasePrice:
+      type: object
+      description: The price of the purchase.
+      properties:
+        objectidentifier:
+          type: string
+          description: The unique identifier of the purchase price.
+        purchasePriceImmovableProperty:
+          $ref: "#/components/schemas/PurchasePriceImmovableProperty"
+        purchasePriceType:
+          type: string
+          description: The type of the purchase.
+    PurchasePriceImmovableProperty:
+      type: object
+      description: The price of immovable property of the estate.
+      properties:
+        currency:
+          type: string
+          description: The currency the purchase sum.
+        sum:
+          type: integer
+          description: The purchase sum.
+    Acquisition:
+      type: object
+      properties:
+        objectidentifier:
+          type: string
+          description: The unique identifier of the acquisition.
+        enrollmentDay:
+          type: string
+          description: The enrollment day of the acquisition.
+        decision:
+          type: string
+          description: The decision of the acquisition.
+        share:
+          type: string
+          description: The share of the acquisition.
+        acquisitionDay:
+          type: string
+          description: The day of the acquisition.
+        acquisitionType:
+          type: string
+          description: The type of the acquisition.
+        registeredOwnership:
+          type: string
+          description: The unique identifier of the registered ownership.
+    Transfer:
+      type: object
+      properties:
+        objectidentifier:
+          type: string
+          description: The unique identifier of the acquisition.
+        share:
+          type: string
+          description: The share of the acquisition.
+        registeredOwnership:
+          type: string
+          description: The unique identifier of the registered ownership.
+    Actions:
+      type: object
+      properties:
+        actionType1:
+          type: string
+          description: The first type of an action.
+        actionType2:
+          type: string
+          description: The second type of an action.
+        fileDesignation:
+          type: string
+          description: The designation of the file of the action.
+        actionDate:
+          type: string
+          description: The date of when the action is performed.
+        objectidentifier:
+          type: string
+          description: The unique identifier of the action.
+        littera:
+          type: string
+          description: Reference to estate in the action.
+        runningNumber:
+          type: integer
+          description: A number showing in which order the actions is performed.
