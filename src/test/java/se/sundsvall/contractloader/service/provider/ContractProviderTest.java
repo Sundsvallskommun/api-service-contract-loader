@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.PRECONDITION_FAILED;
@@ -38,9 +37,10 @@ import generated.se.sundsvall.contract.Extension;
 import generated.se.sundsvall.contract.ExtraParameterGroup;
 import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.Invoicing;
-import generated.se.sundsvall.contract.Notice;
+import generated.se.sundsvall.contract.NoticeTerm;
 import generated.se.sundsvall.contract.Parameter;
 import generated.se.sundsvall.contract.Party;
+import generated.se.sundsvall.contract.Period;
 import generated.se.sundsvall.contract.Stakeholder;
 import generated.se.sundsvall.estateinfo.EstateDesignationResponse;
 import java.math.BigDecimal;
@@ -48,6 +48,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -67,21 +68,26 @@ import se.sundsvall.contractloader.service.Constants;
 class ContractProviderTest {
 
 	@Mock
-	private PartyClient partyClient;
+	private PartyClient partyClientMock;
 
 	@Mock
-	private EstateInfoClient estateInfoClient;
+	private EstateInfoClient estateInfoClientMock;
 
 	@InjectMocks
 	private ContractProvider contractProvider;
+
+	@AfterEach
+	void verifyNoMoreMockInteractions() {
+		verifyNoMoreInteractions(partyClientMock, estateInfoClientMock);
+	}
 
 	@Test
 	void toContract() {
 		// Arrange
 		final var arrendekontraktEntity = createArrendekontrakt();
 
-		when(partyClient.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
-		when(estateInfoClient.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
+		when(partyClientMock.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
+		when(estateInfoClientMock.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
 
 		// Call
 		final Contract contract = contractProvider.toContract(arrendekontraktEntity);
@@ -94,18 +100,23 @@ class ContractProviderTest {
 		assertThat(contract.getStatus()).isEqualTo(TERMINATED);
 		assertThat(contract.getDuration()).isEqualTo(new Duration().leaseDuration(1).unit(YEARS));
 		assertThat(contract.getInvoicing()).isEqualTo(new Invoicing().invoicedIn(ADVANCE).invoiceInterval(YEARLY));
-		assertThat(contract.getStart()).isEqualTo(arrendekontraktEntity.getFromDatum());
-		assertThat(contract.getEnd()).isEqualTo(arrendekontraktEntity.getTomDatum());
+		assertThat(contract.getStartDate()).isEqualTo(arrendekontraktEntity.getFromDatum());
+		assertThat(contract.getEndDate()).isEqualTo(arrendekontraktEntity.getTomDatum());
 		assertThat(contract.getExtension()).isEqualTo(new Extension().leaseExtension(1).autoExtend(true).unit(YEARS));
-		assertThat(contract.getNotices()).hasSize(2)
+		assertThat(contract.getNotice().getTerms()).hasSize(2)
 			.extracting(
-				Notice::getParty,
-				Notice::getPeriodOfNotice,
-				generated.se.sundsvall.contract.Notice::getUnit)
+				NoticeTerm::getParty,
+				NoticeTerm::getPeriodOfNotice,
+				NoticeTerm::getUnit)
 			.containsExactlyInAnyOrder(
 				tuple(Party.LESSOR, 6, MONTHS),
 				tuple(Party.LESSEE, 10, YEARS));
+		assertThat(contract.getNotice().getNoticeDate()).isEqualTo(LocalDate.of(2023, 6, 30));
+		assertThat(contract.getNotice().getNoticeGivenBy()).isEqualTo(Party.LESSEE);
 		assertThat(contract.getArea()).isEqualTo(7780);
+
+		assertThat(contract.getCurrentPeriod()).extracting(Period::getStartDate, Period::getEndDate)
+			.containsExactly(arrendekontraktEntity.getFromDatum(), arrendekontraktEntity.getUppsagtDatum().plusYears(1));
 
 		assertThat(contract.getExtraParameters()).filteredOn(extraParameterGroup -> extraParameterGroup.getName().equals("InvoiceInfo"))
 			.extracting(ExtraParameterGroup::getParameters)
@@ -190,18 +201,19 @@ class ContractProviderTest {
 			.additionalInformation(List.of("Avgift, båtplats")));
 
 		// Is Organization and therefore uses org number of the second call
-		verify(partyClient, times(2)).getPartyId(anyString(), any(), anyString());
-		verifyNoMoreInteractions(partyClient);
+		verify(partyClientMock, times(2)).getPartyId(anyString(), any(), anyString());
 	}
 
 	@Test
 	void toContractWhenStatusIsActiveEndShouldBeNull() {
 		// Arrange - create contract without sistaDebiteringsdatum (will be ACTIVE)
 		final var arrendekontraktEntity = createArrendekontrakt()
+			.withUppsagtAv(null)
+			.withUppsagtDatum(null)
 			.withSistaDebiteringsdatum(null);
 
-		when(partyClient.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
-		when(estateInfoClient.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
+		when(partyClientMock.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
+		when(estateInfoClientMock.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
 
 		// Act
 		final Contract contract = contractProvider.toContract(arrendekontraktEntity);
@@ -209,18 +221,25 @@ class ContractProviderTest {
 		// Assert
 		assertThat(contract).isNotNull();
 		assertThat(contract.getStatus()).isEqualTo(ACTIVE);
-		assertThat(contract.getEnd()).isNull();
-		assertThat(contract.getStart()).isEqualTo(arrendekontraktEntity.getFromDatum());
+		assertThat(contract.getEndDate()).isNull();
+		assertThat(contract.getStartDate()).isEqualTo(arrendekontraktEntity.getFromDatum());
+		assertThat(contract.getCurrentPeriod()).extracting(Period::getStartDate, Period::getEndDate)
+			.containsExactly(arrendekontraktEntity.getFromDatum(), LocalDate.of(2027, 1, 1));
+		assertThat(contract.getNotice().getNoticeDate()).isNull();
+		assertThat(contract.getNotice().getNoticeGivenBy()).isNull();
+
 	}
 
 	@Test
 	void toContractWhenStatusIsActiveDueToFutureBillingDateEndShouldBeNull() {
 		// Arrange - create contract with future sistaDebiteringsdatum (will be ACTIVE)
 		final var arrendekontraktEntity = createArrendekontrakt()
+			.withUppsagtAv(null)
+			.withUppsagtDatum(null)
 			.withSistaDebiteringsdatum(LocalDate.now().plusYears(1));
 
-		when(partyClient.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
-		when(estateInfoClient.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
+		when(partyClientMock.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
+		when(estateInfoClientMock.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
 
 		// Act
 		final Contract contract = contractProvider.toContract(arrendekontraktEntity);
@@ -228,7 +247,7 @@ class ContractProviderTest {
 		// Assert
 		assertThat(contract).isNotNull();
 		assertThat(contract.getStatus()).isEqualTo(ACTIVE);
-		assertThat(contract.getEnd()).isNull();
+		assertThat(contract.getEndDate()).isNull();
 	}
 
 	@Test
@@ -237,8 +256,8 @@ class ContractProviderTest {
 		final var arrendekontraktEntity = createArrendekontrakt()
 			.withSistaDebiteringsdatum(LocalDate.now().minusDays(1));
 
-		when(partyClient.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
-		when(estateInfoClient.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
+		when(partyClientMock.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
+		when(estateInfoClientMock.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
 
 		// Act
 		final Contract contract = contractProvider.toContract(arrendekontraktEntity);
@@ -246,7 +265,20 @@ class ContractProviderTest {
 		// Assert
 		assertThat(contract).isNotNull();
 		assertThat(contract.getStatus()).isEqualTo(TERMINATED);
-		assertThat(contract.getEnd()).isEqualTo(arrendekontraktEntity.getTomDatum());
+		assertThat(contract.getEndDate()).isEqualTo(arrendekontraktEntity.getTomDatum());
+		// Current period should be from start date to termination date + 1 year (since we have a notice term of 1 year)
+		assertThat(contract.getCurrentPeriod()).extracting(Period::getStartDate, Period::getEndDate)
+			.containsExactly(arrendekontraktEntity.getFromDatum(), arrendekontraktEntity.getUppsagtDatum().plusYears(1));
+		assertThat(contract.getNotice().getTerms()).hasSize(2)
+			.extracting(
+				NoticeTerm::getParty,
+				NoticeTerm::getPeriodOfNotice,
+				NoticeTerm::getUnit)
+			.containsExactlyInAnyOrder(
+				tuple(Party.LESSOR, 6, MONTHS),
+				tuple(Party.LESSEE, 10, YEARS));
+		assertThat(contract.getNotice().getNoticeDate()).isEqualTo(LocalDate.of(2023, 6, 30));
+		assertThat(contract.getNotice().getNoticeGivenBy()).isEqualTo(Party.LESSEE);
 	}
 
 	@Test
@@ -254,7 +286,7 @@ class ContractProviderTest {
 		// Arrange
 		final var arrendekontraktEntity = createArrendekontrakt();
 
-		when(partyClient.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.empty());
+		when(partyClientMock.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.empty());
 
 		// Call
 		final var exception = assertThrows(ThrowableProblem.class, () -> contractProvider.toContract(arrendekontraktEntity));
@@ -264,8 +296,7 @@ class ContractProviderTest {
 		assertThat(exception.getDetail()).isEqualTo("No partyId found for person- or organization number");
 
 		// Verify
-		verify(partyClient, times(2)).getPartyId(anyString(), any(), anyString());
-		verifyNoMoreInteractions(partyClient);
+		verify(partyClientMock, times(2)).getPartyId(anyString(), any(), anyString());
 	}
 
 	@Test
@@ -274,7 +305,6 @@ class ContractProviderTest {
 		final var contract = contractProvider.toContract(null);
 
 		assertThat(contract).isNull();
-		verifyNoInteractions(partyClient);
 	}
 
 	private ArrendekontraktEntity createArrendekontrakt() {
@@ -287,7 +317,7 @@ class ContractProviderTest {
 			.withKontraktsdatum(LocalDate.of(2022, 12, 15))
 			.withSistaDebiteringsdatum(LocalDate.of(2023, 11, 30))
 			.withUppsagtDatum(LocalDate.of(2023, 6, 30))
-			.withUppsagtAv("uppsagtAv-1")
+			.withUppsagtAv("Arrendator")
 			.withDebiteringstyp("debiteringstyp-1")
 			.withKontraktsarea("kontraktsarea-1")
 			.withHyresid("hyresid-1")
