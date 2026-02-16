@@ -11,6 +11,7 @@ import static generated.se.sundsvall.contract.StakeholderType.PERSON;
 
 import generated.se.sundsvall.contract.IntervalType;
 import generated.se.sundsvall.contract.LeaseType;
+import generated.se.sundsvall.contract.Party;
 import generated.se.sundsvall.contract.StakeholderType;
 import java.util.Map;
 
@@ -110,6 +111,10 @@ public final class Constants {
 		"kvartal", QUARTERLY,
 		"Halvår", HALF_YEARLY,
 		"år", YEARLY);
+
+	public static final Map<String, Party> partyMapping = Map.of(
+		"Arrendator", Party.LESSEE,
+		"Hyresvärd", Party.LESSOR);
 
 	private Constants() {}
 }

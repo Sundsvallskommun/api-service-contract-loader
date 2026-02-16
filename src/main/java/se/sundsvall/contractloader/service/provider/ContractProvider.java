@@ -9,8 +9,6 @@ import static generated.se.sundsvall.contract.StakeholderType.MUNICIPALITY;
 import static generated.se.sundsvall.contract.StakeholderType.OTHER;
 import static generated.se.sundsvall.contract.Status.ACTIVE;
 import static generated.se.sundsvall.contract.Status.TERMINATED;
-import static generated.se.sundsvall.contract.TimeUnit.MONTHS;
-import static generated.se.sundsvall.contract.TimeUnit.YEARS;
 import static generated.se.sundsvall.party.PartyType.ENTERPRISE;
 import static generated.se.sundsvall.party.PartyType.PRIVATE;
 import static java.util.Collections.emptyList;
@@ -18,7 +16,6 @@ import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.zalando.problem.Status.PRECONDITION_FAILED;
 import static se.sundsvall.contractloader.service.Constants.ALLMAN_PLATSUPPLATELSE;
@@ -48,6 +45,7 @@ import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EX
 import static se.sundsvall.contractloader.service.Constants.SEK_CURRENCY;
 import static se.sundsvall.contractloader.service.Constants.additionalInformationMapping;
 import static se.sundsvall.contractloader.service.Constants.intervalTypeMapping;
+import static se.sundsvall.contractloader.service.Constants.partyMapping;
 import static se.sundsvall.contractloader.service.Constants.stakeholderTypeMapping;
 
 import generated.se.sundsvall.contract.Address;
@@ -60,12 +58,15 @@ import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.Invoicing;
 import generated.se.sundsvall.contract.LeaseType;
 import generated.se.sundsvall.contract.Notice;
+import generated.se.sundsvall.contract.NoticeTerm;
 import generated.se.sundsvall.contract.Parameter;
 import generated.se.sundsvall.contract.Party;
+import generated.se.sundsvall.contract.Period;
 import generated.se.sundsvall.contract.PropertyDesignation;
 import generated.se.sundsvall.contract.Stakeholder;
 import generated.se.sundsvall.contract.StakeholderRole;
 import generated.se.sundsvall.contract.Status;
+import generated.se.sundsvall.contract.TimeUnit;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -101,6 +102,7 @@ public final class ContractProvider {
 	private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
 	private static final double ONE = 1;
 	private static final String MONTH = "månad";
+	private static final String YEAR = "år";
 	private final PartyClient partyClient;
 	private final EstateInfoClient estateInfoClient;
 
@@ -122,10 +124,11 @@ public final class ContractProvider {
 				.duration(toDuration(entity.getFromDatum(), entity.getTomDatum()))
 				.fees(toFees(entity.getArrendekontraktsrader(), entity.getKontraktstyp()))
 				.invoicing(toInvoicing(entity))
-				.start(entity.getFromDatum())
-				.end(toEnd(entity))
+				.startDate(entity.getFromDatum())
+				.endDate(toEnd(entity))
 				.extension(toExtension(entity))
-				.notices(toNotices(entity))
+				.notice(toNotice(entity))
+				.currentPeriod(toCurrentPeriod(entity))
 				.area(toArea(entity.getKontraktsarea())))
 			.orElse(null);
 	}
@@ -165,14 +168,13 @@ public final class ContractProvider {
 
 	private Extension toExtension(final ArrendekontraktEntity arrendekontraktEntity) {
 		final var extension = arrendekontraktEntity.getForlangning();
-		final var autoExtend = isNotBlank(extension) && this.toInteger(extension) > 0;
 		final var leaseExtension = ofNullable(extension).map(this::toInteger).orElse(null);
 		final var unit = ofNullable(arrendekontraktEntity.getEnhetForlangning())
 			// There are only "månad" and "år" in the data
-			.map(unit1 -> MONTH.equals(unit1) ? MONTHS : YEARS).orElse(null);
+			.map(unit1 -> MONTH.equals(unit1) ? TimeUnit.MONTHS : TimeUnit.YEARS).orElse(null);
 
 		return new Extension()
-			.autoExtend(autoExtend)
+			.autoExtend(toAutoExtend(extension))
 			.leaseExtension(leaseExtension)
 			.unit(unit);
 	}
@@ -183,33 +185,46 @@ public final class ContractProvider {
 			.orElse(null);
 	}
 
-	private List<Notice> toNotices(final ArrendekontraktEntity arrendekontraktEntity) {
-		var notices = new ArrayList<Notice>();
-		if (isNotEmpty(arrendekontraktEntity.getUppsTidArrendator())) {
-			notices.add(toLesseeNotice(arrendekontraktEntity));
+	private Boolean toAutoExtend(final String extension) {
+		if (isBlank(extension)) {
+			return false;
 		}
-		if (isNotEmpty(arrendekontraktEntity.getUppsTidHyresvard())) {
-			notices.add(toLessorNotice(arrendekontraktEntity));
-		}
-		return notices;
+		Integer value = this.toInteger(extension);
+		return value != null && value > 0;
 	}
 
-	private Notice toLesseeNotice(ArrendekontraktEntity arrendekontraktEntity) {
+	private Notice toNotice(final ArrendekontraktEntity arrendekontraktEntity) {
+		var terms = new ArrayList<NoticeTerm>();
+
+		if (isNotEmpty(arrendekontraktEntity.getUppsTidArrendator())) {
+			terms.add(toLesseeTerm(arrendekontraktEntity));
+		}
+		if (isNotEmpty(arrendekontraktEntity.getUppsTidHyresvard())) {
+			terms.add(toLessorTerm(arrendekontraktEntity));
+		}
+
 		return new Notice()
+			.noticeDate(arrendekontraktEntity.getUppsagtDatum())
+			.noticeGivenBy(partyMapping.get(Optional.ofNullable(arrendekontraktEntity.getUppsagtAv()).orElse("")))
+			.terms(terms);
+	}
+
+	private NoticeTerm toLesseeTerm(ArrendekontraktEntity arrendekontraktEntity) {
+		return new NoticeTerm()
 			.periodOfNotice(ofNullable(arrendekontraktEntity.getUppsTidArrendator()).map(this::toInteger).orElse(null))
 			.unit(ofNullable(arrendekontraktEntity.getEnhetUppsTidArrendator())
 				// There are only "månad" and "år" in the data
-				.map(unit -> MONTH.equals(unit) ? MONTHS : YEARS)
+				.map(unit -> MONTH.equals(unit) ? TimeUnit.MONTHS : TimeUnit.YEARS)
 				.orElse(null))
 			.party(LESSEE);
 	}
 
-	private Notice toLessorNotice(ArrendekontraktEntity arrendekontraktEntity) {
-		return new Notice()
+	private NoticeTerm toLessorTerm(ArrendekontraktEntity arrendekontraktEntity) {
+		return new NoticeTerm()
 			.periodOfNotice(ofNullable(arrendekontraktEntity.getUppsTidHyresvard()).map(this::toInteger).orElse(null))
 			.unit(ofNullable(arrendekontraktEntity.getEnhetUppsTidHyresvard())
 				// There are only "månad" and "år" in the data
-				.map(unit -> MONTH.equals(unit) ? MONTHS : YEARS)
+				.map(unit -> MONTH.equals(unit) ? TimeUnit.MONTHS : TimeUnit.YEARS)
 				.orElse(null))
 			.party(Party.LESSOR);
 	}
@@ -451,7 +466,7 @@ public final class ContractProvider {
 		final var durationInYears = ChronoUnit.YEARS.between(fromDate, toDate.plusDays(1));
 		return new Duration()
 			.leaseDuration(Math.toIntExact(durationInYears))
-			.unit(YEARS);
+			.unit(TimeUnit.YEARS);
 	}
 
 	private Fees toFees(List<ArrendekontraktsradEntity> arrendekontraktsrader, String kontraktstyp) {
@@ -473,6 +488,74 @@ public final class ContractProvider {
 				.additionalInformation(additionalInformation))
 			.orElse(null);
 
+	}
+
+	private Period toCurrentPeriod(ArrendekontraktEntity arrendekontraktEntity) {
+		if (isNull(arrendekontraktEntity.getFromDatum()) || isNull(arrendekontraktEntity.getTomDatum())) {
+			return null;
+		}
+
+		var period = new Period()
+			.startDate(arrendekontraktEntity.getFromDatum());
+		final boolean autoExtend = toAutoExtend(arrendekontraktEntity.getForlangning());
+		final boolean isTerminated = Optional.ofNullable(arrendekontraktEntity.getUppsagtDatum()).isPresent();
+		final String extensionUnit = arrendekontraktEntity.getEnhetForlangning();
+
+		if (autoExtend && !isTerminated) {
+			Integer extension = toInteger(arrendekontraktEntity.getForlangning());
+
+			// Validate extension value to prevent null pointer and infinite loops
+			if (extension != null && extension > 0) {
+				if (YEAR.equals(extensionUnit)) {
+					period.endDate(calculateExtendedEndDate(arrendekontraktEntity.getFromDatum(), extension, ChronoUnit.YEARS));
+				} else if (MONTH.equals(extensionUnit)) {
+					period.endDate(calculateExtendedEndDate(arrendekontraktEntity.getFromDatum(), extension, ChronoUnit.MONTHS));
+				} else {
+					LOGGER.warn("Unexpected extension unit '{}' for contract {}, using tomDatum",
+						extensionUnit, arrendekontraktEntity.getArrendekontrakt());
+					period.endDate(arrendekontraktEntity.getTomDatum());
+				}
+			} else {
+				// Invalid extension value, use tomDatum
+				period.endDate(arrendekontraktEntity.getTomDatum());
+			}
+		} else if (isTerminated) {
+			period.endDate(getEndDateWhenTerminated(arrendekontraktEntity));
+		} else {
+			period.endDate(arrendekontraktEntity.getTomDatum());
+		}
+
+		return period;
+	}
+
+	private LocalDate calculateExtendedEndDate(LocalDate startDate, int extensionValue, ChronoUnit unit) {
+		var endDate = startDate;
+		while (endDate.plus(extensionValue, unit).isBefore(LocalDate.now())) {
+			endDate = endDate.plus(extensionValue, unit);
+		}
+		return endDate.plus(extensionValue, unit);
+	}
+
+	private LocalDate getEndDateWhenTerminated(ArrendekontraktEntity arrendekontraktEntity) {
+		if (isNull(arrendekontraktEntity.getUppsagtDatum())) {
+			return null;
+		}
+
+		Integer extension = toInteger(arrendekontraktEntity.getForlangning());
+		String extensionUnit = arrendekontraktEntity.getEnhetForlangning();
+
+		// Return termination date if no valid extension is configured
+		if (extension == null || extension <= 0) {
+			return arrendekontraktEntity.getUppsagtDatum();
+		}
+
+		if (YEAR.equals(extensionUnit)) {
+			return arrendekontraktEntity.getUppsagtDatum().plusYears(extension);
+		} else if (MONTH.equals(extensionUnit)) {
+			return arrendekontraktEntity.getUppsagtDatum().plusMonths(extension);
+		}
+
+		return arrendekontraktEntity.getUppsagtDatum();
 	}
 
 	private BigDecimal getIndexationRate(ArrendekontraktsradEntity row) {
