@@ -1,13 +1,5 @@
 package se.sundsvall.contractloader.service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.FAILED;
-
 import generated.se.sundsvall.contract.Contract;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -23,6 +15,14 @@ import se.sundsvall.contractloader.integration.contract.ContractClient;
 import se.sundsvall.contractloader.integration.db.ArrendekontraktRepository;
 import se.sundsvall.contractloader.integration.db.model.ArrendekontraktEntity;
 import se.sundsvall.contractloader.service.provider.ContractProvider;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.FAILED;
 
 @ExtendWith(MockitoExtension.class)
 class ExportServiceTest {
