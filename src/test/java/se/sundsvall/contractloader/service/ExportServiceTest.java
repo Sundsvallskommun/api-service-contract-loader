@@ -58,7 +58,7 @@ class ExportServiceTest {
 		exportService.export();
 
 		// Assert
-		verify(arrendekontraktRepositoryMock).findBySendStatusIsNullOrSendStatus(FAILED, pageable);
+		verify(arrendekontraktRepositoryMock, times(2)).findBySendStatusIsNullOrSendStatus(FAILED, pageable);
 		verify(arrendekontraktRepositoryMock).save(arrendekontrakt1);
 		verify(arrendekontraktRepositoryMock).save(arrendekontrakt2);
 		verify(contractProviderMock, times(2)).toContract(any(ArrendekontraktEntity.class));
@@ -84,7 +84,7 @@ class ExportServiceTest {
 		exportService.export();
 
 		// Assert
-		verify(arrendekontraktRepositoryMock).findBySendStatusIsNullOrSendStatus(FAILED, pageable);
+		verify(arrendekontraktRepositoryMock, times(2)).findBySendStatusIsNullOrSendStatus(FAILED, pageable);
 		verify(arrendekontraktRepositoryMock).save(arrendekontrakt1);
 		verify(arrendekontraktRepositoryMock).save(arrendekontrakt2);
 		verify(contractProviderMock, times(2)).toContract(any(ArrendekontraktEntity.class));

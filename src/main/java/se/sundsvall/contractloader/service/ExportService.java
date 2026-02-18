@@ -1,5 +1,9 @@
 package se.sundsvall.contractloader.service;
 
+import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.FAILED;
+import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.SENT;
+import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_ID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -32,24 +36,34 @@ public class ExportService {
 	@Async
 	public void export() {
 		int page = 0;
-		Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+		var processedContracts = new HashSet<String>();
 
-		var pageResult = arrendekontraktRepository.findBySendStatusIsNullOrSendStatus(FAILED, pageable);
+		var pageResult = arrendekontraktRepository.findBySendStatusIsNullOrSendStatus(FAILED, PageRequest.of(page, PAGE_SIZE));
 		while (pageResult.hasContent()) {
-			pageResult.forEach(contract -> {
+			var madeProgress = false;
+			for (var contract : pageResult) {
+				if (processedContracts.contains(contract.getArrendekontrakt())) {
+					continue;
+				}
+				madeProgress = true;
 				try {
 					LOGGER.info("Creating contract: {}", contract.getArrendekontrakt());
+					processedContracts.add(contract.getArrendekontrakt());
 					contractClient.createContract(MUNICIPALITY_ID, contractProvider.toContract(contract));
 					arrendekontraktRepository.save(contract.withSendStatus(SENT));
-				} catch (Exception _) {
-					LOGGER.error("Something went wrong for contract: {}", contract.getArrendekontrakt());
+				} catch (Exception e) {
+					LOGGER.error("Something went wrong for contract: {}", contract.getArrendekontrakt(), e);
 					arrendekontraktRepository.save(contract.withSendStatus(FAILED));
 				}
-			});
-			if (!pageResult.hasNext()) {
-				break;
 			}
-			pageResult = arrendekontraktRepository.findBySendStatusIsNullOrSendStatus(FAILED, PageRequest.of(0, PAGE_SIZE));
+			if (madeProgress) {
+				page = 0; // Reset to page 0 since SENT contracts dropped out of results
+			} else if (pageResult.hasNext()) {
+				page++; // Advance past page of already-processed FAILED contracts
+			} else {
+				break; // No more pages
+			}
+			pageResult = arrendekontraktRepository.findBySendStatusIsNullOrSendStatus(FAILED, PageRequest.of(page, PAGE_SIZE));
 		}
 	}
 }

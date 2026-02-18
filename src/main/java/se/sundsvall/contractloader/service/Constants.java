@@ -51,7 +51,6 @@ public final class Constants {
 	public static final String CONTRACT_DETAILS_ORIGINAL_FILE_PARAMETER = "originalContractFilename";
 
 	public static final Map<String, LeaseType> leaseTypeMapping = Map.ofEntries(
-		Map.entry(TOMTRATT, LEASEHOLD),
 		Map.entry(BATPLATS, USUFRUCT_MOORING),
 		Map.entry(BOSTADSARRENDE_JUNIBOSAND, LAND_LEASE_RESIDENTIAL),
 		Map.entry(BOSTADSARRENDE, LAND_LEASE_RESIDENTIAL),

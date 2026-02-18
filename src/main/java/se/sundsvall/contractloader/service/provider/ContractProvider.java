@@ -47,6 +47,7 @@ import se.sundsvall.contractloader.service.Constants;
 
 import static generated.se.sundsvall.contract.AddressType.POSTAL_ADDRESS;
 import static generated.se.sundsvall.contract.ContractType.LAND_LEASE_PUBLIC;
+import static generated.se.sundsvall.contract.ContractType.LEASEHOLD;
 import static generated.se.sundsvall.contract.ContractType.LEASE_AGREEMENT;
 import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
 import static generated.se.sundsvall.contract.Party.LESSEE;
@@ -88,6 +89,7 @@ import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EX
 import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EXTENSION_KEY;
 import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EXTENSION_VALUE;
 import static se.sundsvall.contractloader.service.Constants.SEK_CURRENCY;
+import static se.sundsvall.contractloader.service.Constants.TOMTRATT;
 import static se.sundsvall.contractloader.service.Constants.additionalInformationMapping;
 import static se.sundsvall.contractloader.service.Constants.intervalTypeMapping;
 import static se.sundsvall.contractloader.service.Constants.partyMapping;
@@ -134,9 +136,14 @@ public final class ContractProvider {
 	}
 
 	private static ContractType toContractType(String contractType) {
-		return contractType != null && contractType.equals(ALLMAN_PLATSUPPLATELSE)
-			? LAND_LEASE_PUBLIC
-			: LEASE_AGREEMENT;
+		if (contractType == null) {
+			return LEASE_AGREEMENT;
+		}
+		return switch (contractType) {
+			case ALLMAN_PLATSUPPLATELSE -> LAND_LEASE_PUBLIC;
+			case TOMTRATT -> LEASEHOLD;
+			default -> LEASE_AGREEMENT;
+		};
 	}
 
 	private static LeaseType toLeaseType(String contractType) {
