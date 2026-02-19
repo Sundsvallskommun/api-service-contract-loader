@@ -1,5 +1,11 @@
 package se.sundsvall.contractloader.service;
 
+import generated.se.sundsvall.contract.IntervalType;
+import generated.se.sundsvall.contract.LeaseType;
+import generated.se.sundsvall.contract.Party;
+import generated.se.sundsvall.contract.StakeholderType;
+import java.util.Map;
+
 import static generated.se.sundsvall.contract.IntervalType.HALF_YEARLY;
 import static generated.se.sundsvall.contract.IntervalType.QUARTERLY;
 import static generated.se.sundsvall.contract.IntervalType.YEARLY;
@@ -8,12 +14,6 @@ import static generated.se.sundsvall.contract.StakeholderType.ASSOCIATION;
 import static generated.se.sundsvall.contract.StakeholderType.MUNICIPALITY;
 import static generated.se.sundsvall.contract.StakeholderType.ORGANIZATION;
 import static generated.se.sundsvall.contract.StakeholderType.PERSON;
-
-import generated.se.sundsvall.contract.IntervalType;
-import generated.se.sundsvall.contract.LeaseType;
-import generated.se.sundsvall.contract.Party;
-import generated.se.sundsvall.contract.StakeholderType;
-import java.util.Map;
 
 public final class Constants {
 

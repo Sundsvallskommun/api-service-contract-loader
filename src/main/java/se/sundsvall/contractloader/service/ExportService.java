@@ -1,9 +1,5 @@
 package se.sundsvall.contractloader.service;
 
-import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.FAILED;
-import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.SENT;
-import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_ID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +9,10 @@ import org.springframework.stereotype.Service;
 import se.sundsvall.contractloader.integration.contract.ContractClient;
 import se.sundsvall.contractloader.integration.db.ArrendekontraktRepository;
 import se.sundsvall.contractloader.service.provider.ContractProvider;
+
+import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.FAILED;
+import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.SENT;
+import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_ID;
 
 @Service
 public class ExportService {

@@ -1,35 +1,5 @@
 package se.sundsvall.contractloader.service.provider;
 
-import static generated.se.sundsvall.contract.AddressType.POSTAL_ADDRESS;
-import static generated.se.sundsvall.contract.ContractType.LEASE_AGREEMENT;
-import static generated.se.sundsvall.contract.IntervalType.YEARLY;
-import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
-import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_MOORING;
-import static generated.se.sundsvall.contract.StakeholderRole.CONTACT_PERSON;
-import static generated.se.sundsvall.contract.StakeholderRole.LESSEE;
-import static generated.se.sundsvall.contract.StakeholderRole.LESSOR;
-import static generated.se.sundsvall.contract.StakeholderRole.PRIMARY_BILLING_PARTY;
-import static generated.se.sundsvall.contract.StakeholderType.MUNICIPALITY;
-import static generated.se.sundsvall.contract.StakeholderType.ORGANIZATION;
-import static generated.se.sundsvall.contract.StakeholderType.PERSON;
-import static generated.se.sundsvall.contract.Status.ACTIVE;
-import static generated.se.sundsvall.contract.Status.TERMINATED;
-import static generated.se.sundsvall.contract.TimeUnit.MONTHS;
-import static generated.se.sundsvall.contract.TimeUnit.YEARS;
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.tuple;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.PRECONDITION_FAILED;
-import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_NAME;
-import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_PARTY_ID;
-
 import generated.se.sundsvall.contract.Address;
 import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.Duration;
@@ -63,6 +33,36 @@ import se.sundsvall.contractloader.integration.db.model.NoteringEntity;
 import se.sundsvall.contractloader.integration.estateinfo.EstateInfoClient;
 import se.sundsvall.contractloader.integration.party.PartyClient;
 import se.sundsvall.contractloader.service.Constants;
+
+import static generated.se.sundsvall.contract.AddressType.POSTAL_ADDRESS;
+import static generated.se.sundsvall.contract.ContractType.LEASE_AGREEMENT;
+import static generated.se.sundsvall.contract.IntervalType.YEARLY;
+import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
+import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_MOORING;
+import static generated.se.sundsvall.contract.StakeholderRole.CONTACT_PERSON;
+import static generated.se.sundsvall.contract.StakeholderRole.LESSEE;
+import static generated.se.sundsvall.contract.StakeholderRole.LESSOR;
+import static generated.se.sundsvall.contract.StakeholderRole.PRIMARY_BILLING_PARTY;
+import static generated.se.sundsvall.contract.StakeholderType.MUNICIPALITY;
+import static generated.se.sundsvall.contract.StakeholderType.ORGANIZATION;
+import static generated.se.sundsvall.contract.StakeholderType.PERSON;
+import static generated.se.sundsvall.contract.Status.ACTIVE;
+import static generated.se.sundsvall.contract.Status.TERMINATED;
+import static generated.se.sundsvall.contract.TimeUnit.MONTHS;
+import static generated.se.sundsvall.contract.TimeUnit.YEARS;
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.zalando.problem.Status.PRECONDITION_FAILED;
+import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_NAME;
+import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_PARTY_ID;
 
 @ExtendWith(MockitoExtension.class)
 class ContractProviderTest {
