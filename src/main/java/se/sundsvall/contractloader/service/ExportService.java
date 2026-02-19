@@ -1,13 +1,9 @@
 package se.sundsvall.contractloader.service;
 
-import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.FAILED;
-import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.SENT;
-import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_ID;
-
+import java.util.HashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import se.sundsvall.contractloader.integration.contract.ContractClient;
