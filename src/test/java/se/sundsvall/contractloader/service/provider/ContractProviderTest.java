@@ -87,7 +87,7 @@ class ContractProviderTest {
 		final var arrendekontraktEntity = createArrendekontrakt();
 
 		when(partyClientMock.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
-		when(estateInfoClientMock.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse(),
+		when(estateInfoClientMock.getEstateByDesignation(anyString())).thenReturn(List.of(new EstateDesignationResponse(),
 			new EstateDesignationResponse().designation("Designation-1").districtname(""),
 			new EstateDesignationResponse().designation("fastighetsbeteckning-1").districtname(" "),
 			new EstateDesignationResponse().designation("fastighetsbeteckning-1").districtname("Test District")));
@@ -212,7 +212,7 @@ class ContractProviderTest {
 
 		// Is Organization and therefore uses org number of the second call
 		verify(partyClientMock, times(2)).getPartyId(anyString(), any(), anyString());
-		verify(estateInfoClientMock).getEstateByDesignation(anyString(), anyString());
+		verify(estateInfoClientMock).getEstateByDesignation(anyString());
 	}
 
 	@Test
@@ -224,7 +224,7 @@ class ContractProviderTest {
 			.withSistaDebiteringsdatum(null);
 
 		when(partyClientMock.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
-		when(estateInfoClientMock.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
+		when(estateInfoClientMock.getEstateByDesignation(anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
 
 		// Act
 		final Contract contract = contractProvider.toContract(arrendekontraktEntity);
@@ -250,7 +250,7 @@ class ContractProviderTest {
 			.withSistaDebiteringsdatum(LocalDate.now().plusYears(1));
 
 		when(partyClientMock.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
-		when(estateInfoClientMock.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
+		when(estateInfoClientMock.getEstateByDesignation(anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
 
 		// Act
 		final Contract contract = contractProvider.toContract(arrendekontraktEntity);
@@ -268,7 +268,7 @@ class ContractProviderTest {
 			.withSistaDebiteringsdatum(LocalDate.now().minusDays(1));
 
 		when(partyClientMock.getPartyId(anyString(), any(), anyString())).thenReturn(Optional.of("partyId-1"));
-		when(estateInfoClientMock.getEstateByDesignation(anyString(), anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
+		when(estateInfoClientMock.getEstateByDesignation(anyString())).thenReturn(List.of(new EstateDesignationResponse().districtname("Test District")));
 
 		// Act
 		final Contract contract = contractProvider.toContract(arrendekontraktEntity);

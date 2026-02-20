@@ -5,7 +5,6 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.sundsvall.contractloader.integration.estateinfo.configuration.EstateInfoConfiguration;
 
@@ -19,13 +18,11 @@ public interface EstateInfoClient {
 	/**
 	 * Get estate information by property designation.
 	 *
-	 * @param  municipalityId the municipality ID
-	 * @param  designation    the property designation to search for
-	 * @return                a list of estate designation responses containing district information
+	 * @param  designation the property designation to search for
+	 * @return             a list of estate designation responses containing district information
 	 */
-	@GetMapping(path = "/{municipalityId}/estate-by-designation", produces = APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/estate-one-designation", produces = APPLICATION_JSON_VALUE)
 	List<EstateDesignationResponse> getEstateByDesignation(
-		@PathVariable String municipalityId,
 		@RequestParam String designation);
 
 }

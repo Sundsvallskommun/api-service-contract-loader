@@ -244,10 +244,10 @@ public final class ContractProvider {
 			.map(designation -> {
 				var propertyDesignation = new PropertyDesignation().name(designation);
 				try {
-					var estates = estateInfoClient.getEstateByDesignation(MUNICIPALITY_ID, designation);
+					var estates = estateInfoClient.getEstateByDesignation(designation);
 					// In getEstateByDesignation we get a list of estates which starts with the given designation,
 					// we need to find the one which matches exactly to get the correct district
-					propertyDesignation.district(getDistrictName(designation, estates));
+					propertyDesignation.district(getDistrictName(estates));
 				} catch (Exception e) {
 					LOGGER.warn("Could not retrieve district for designation {}", designation, e);
 				}
@@ -256,12 +256,11 @@ public final class ContractProvider {
 			.orElse(Collections.emptyList());
 	}
 
-	private String getDistrictName(String propertyDesignation, List<EstateDesignationResponse> estates) {
+	private String getDistrictName(List<EstateDesignationResponse> estates) {
 		if (estates == null || estates.isEmpty()) {
 			return null;
 		}
 		return estates.stream()
-			.filter(estate -> propertyDesignation.equals(estate.getDesignation()))
 			.map(EstateDesignationResponse::getDistrictname)
 			.filter(Objects::nonNull)
 			.filter(not(String::isBlank))
