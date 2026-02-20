@@ -19,6 +19,7 @@ import generated.se.sundsvall.contract.Stakeholder;
 import generated.se.sundsvall.contract.StakeholderRole;
 import generated.se.sundsvall.contract.Status;
 import generated.se.sundsvall.contract.TimeUnit;
+import generated.se.sundsvall.estateinfo.EstateDesignationResponse;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -244,15 +245,28 @@ public final class ContractProvider {
 				var propertyDesignation = new PropertyDesignation().name(designation);
 				try {
 					var estates = estateInfoClient.getEstateByDesignation(MUNICIPALITY_ID, designation);
-					if (estates != null && !estates.isEmpty()) {
-						propertyDesignation.district(estates.getFirst().getDistrictname());
-					}
+					// In getEstateByDesignation we get a list of estates which starts with the given designation,
+					// we need to find the one which matches exactly to get the correct district
+					propertyDesignation.district(getDistrictName(designation, estates));
 				} catch (Exception e) {
 					LOGGER.warn("Could not retrieve district for designation {}", designation, e);
 				}
 				return List.of(propertyDesignation);
 			})
 			.orElse(Collections.emptyList());
+	}
+
+	private String getDistrictName(String propertyDesignation, List<EstateDesignationResponse> estates) {
+		if (estates == null || estates.isEmpty()) {
+			return null;
+		}
+		return estates.stream()
+			.filter(estate -> propertyDesignation.equals(estate.getDesignation()))
+			.map(EstateDesignationResponse::getDistrictname)
+			.filter(Objects::nonNull)
+			.filter(not(String::isBlank))
+			.findFirst()
+			.orElse(null);
 	}
 
 	private List<ExtraParameterGroup> toExtraParameterGroups(final ArrendekontraktEntity arrendekontraktEntity) {
