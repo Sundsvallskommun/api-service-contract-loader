@@ -19,6 +19,7 @@ import generated.se.sundsvall.contract.Stakeholder;
 import generated.se.sundsvall.contract.StakeholderRole;
 import generated.se.sundsvall.contract.Status;
 import generated.se.sundsvall.contract.TimeUnit;
+import generated.se.sundsvall.estateinfo.EstateDesignationResponse;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -47,6 +48,7 @@ import se.sundsvall.contractloader.service.Constants;
 
 import static generated.se.sundsvall.contract.AddressType.POSTAL_ADDRESS;
 import static generated.se.sundsvall.contract.ContractType.LAND_LEASE_PUBLIC;
+import static generated.se.sundsvall.contract.ContractType.LEASEHOLD;
 import static generated.se.sundsvall.contract.ContractType.LEASE_AGREEMENT;
 import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
 import static generated.se.sundsvall.contract.Party.LESSEE;
@@ -88,6 +90,7 @@ import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EX
 import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EXTENSION_KEY;
 import static se.sundsvall.contractloader.service.Constants.ORGANIZATION_NAME_EXTENSION_VALUE;
 import static se.sundsvall.contractloader.service.Constants.SEK_CURRENCY;
+import static se.sundsvall.contractloader.service.Constants.TOMTRATT;
 import static se.sundsvall.contractloader.service.Constants.additionalInformationMapping;
 import static se.sundsvall.contractloader.service.Constants.intervalTypeMapping;
 import static se.sundsvall.contractloader.service.Constants.partyMapping;
@@ -134,9 +137,14 @@ public final class ContractProvider {
 	}
 
 	private static ContractType toContractType(String contractType) {
-		return contractType != null && contractType.equals(ALLMAN_PLATSUPPLATELSE)
-			? LAND_LEASE_PUBLIC
-			: LEASE_AGREEMENT;
+		if (contractType == null) {
+			return LEASE_AGREEMENT;
+		}
+		return switch (contractType) {
+			case ALLMAN_PLATSUPPLATELSE -> LAND_LEASE_PUBLIC;
+			case TOMTRATT -> LEASEHOLD;
+			default -> LEASE_AGREEMENT;
+		};
 	}
 
 	private static LeaseType toLeaseType(String contractType) {
@@ -236,16 +244,28 @@ public final class ContractProvider {
 			.map(designation -> {
 				var propertyDesignation = new PropertyDesignation().name(designation);
 				try {
-					var estates = estateInfoClient.getEstateByDesignation(MUNICIPALITY_ID, designation);
-					if (estates != null && !estates.isEmpty()) {
-						propertyDesignation.district(estates.getFirst().getDistrictname());
-					}
+					var estates = estateInfoClient.getEstateByDesignation(designation);
+					// In getEstateByDesignation we get a list of estates which starts with the given designation,
+					// we need to find the one which matches exactly to get the correct district
+					propertyDesignation.district(getDistrictName(estates));
 				} catch (Exception e) {
 					LOGGER.warn("Could not retrieve district for designation {}", designation, e);
 				}
 				return List.of(propertyDesignation);
 			})
 			.orElse(Collections.emptyList());
+	}
+
+	private String getDistrictName(List<EstateDesignationResponse> estates) {
+		if (estates == null || estates.isEmpty()) {
+			return null;
+		}
+		return estates.stream()
+			.map(EstateDesignationResponse::getDistrictname)
+			.filter(Objects::nonNull)
+			.filter(not(String::isBlank))
+			.findFirst()
+			.orElse(null);
 	}
 
 	private List<ExtraParameterGroup> toExtraParameterGroups(final ArrendekontraktEntity arrendekontraktEntity) {
