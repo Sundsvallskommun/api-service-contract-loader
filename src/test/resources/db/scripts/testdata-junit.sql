@@ -36,7 +36,7 @@ VALUES ('ARRENDEKONTRAKT-1', 'LGH  INDEX', 'LÄGENHETSARRENDE', '2022-01-01 00:0
        ('ARRENDEKONTRAKT-1', 'LGH  INDEX', 'LÄGENHETSARRENDE', '2023-01-01 00:00:00', '2023-12-31 00:00:00', '2450,00',
         '2558,13', NULL, NULL, 'Standard, ej lägre än bashyra', 'KPI 80', '100,00', '2009', '10', '301,11', '2013',
         '10', '314,40', '5'),
-       ('', 'LGH  INDEX', 'LÄGENHETSARRENDE', '2024-01-01 00:00:00', '2024-12-31 00:00:00', '2450,00',
+       ('ARRENDEKONTRAKT-2', 'LGH  INDEX', 'LÄGENHETSARRENDE', '2024-01-01 00:00:00', '2024-12-31 00:00:00', '2450,00',
         '2555,04', NULL, NULL, 'Standard, ej lägre än bashyra', 'KPI 80', '100,00', '2009', '10', '301,11', '2014',
         '10', '314,02', '6');
 --------------------------------

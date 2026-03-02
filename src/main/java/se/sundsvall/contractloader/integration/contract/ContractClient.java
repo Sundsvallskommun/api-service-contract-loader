@@ -20,10 +20,10 @@ public interface ContractClient {
 	/**
 	 * Creates a contract in Contract service.
 	 *
-	 * @param  municipalityId                       the municipality ID.
-	 * @param  contract                             the contract to create
-	 *                                              provided partyType and legalId.
-	 * @throws org.zalando.problem.ThrowableProblem
+	 * @param  municipalityId                               the municipality ID.
+	 * @param  contract                                     the contract to create
+	 *                                                      provided partyType and legalId.
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem
 	 */
 	@PostMapping(path = "/{municipalityId}/contracts", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
 	ResponseEntity<Void> createContract(

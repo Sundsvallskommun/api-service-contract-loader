@@ -24,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.contractloader.integration.db.model.ArrendatorEntity;
 import se.sundsvall.contractloader.integration.db.model.ArrendekontraktEntity;
 import se.sundsvall.contractloader.integration.db.model.ArrendekontraktsradEntity;
@@ -33,6 +32,7 @@ import se.sundsvall.contractloader.integration.db.model.NoteringEntity;
 import se.sundsvall.contractloader.integration.estateinfo.EstateInfoClient;
 import se.sundsvall.contractloader.integration.party.PartyClient;
 import se.sundsvall.contractloader.service.Constants;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.se.sundsvall.contract.AddressType.POSTAL_ADDRESS;
 import static generated.se.sundsvall.contract.ContractType.LEASE_AGREEMENT;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.PRECONDITION_FAILED;
+import static org.springframework.http.HttpStatus.PRECONDITION_FAILED;
 import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_NAME;
 import static se.sundsvall.contractloader.service.Constants.MUNICIPALITY_PARTY_ID;
 
