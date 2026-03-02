@@ -9,12 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.contractloader.integration.contract.ContractClient;
 import se.sundsvall.contractloader.integration.db.ArrendekontraktRepository;
 import se.sundsvall.contractloader.integration.db.model.ArrendekontraktEntity;
 import se.sundsvall.contractloader.service.provider.ContractProvider;
+import se.sundsvall.dept44.problem.Problem;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -22,6 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
 import static se.sundsvall.contractloader.integration.db.model.enums.SendStatus.FAILED;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,7 +77,7 @@ class ExportServiceTest {
 		final var contract = new Contract().externalReferenceId(kontrakt2);
 
 		when(arrendekontraktRepositoryMock.findBySendStatusIsNullOrSendStatus(FAILED, pageable)).thenReturn(new PageImpl<>(List.of(arrendekontrakt1, arrendekontrakt2)));
-		when(contractProviderMock.toContract(arrendekontrakt1)).thenThrow(Problem.valueOf(Status.I_AM_A_TEAPOT, "Error occurred"));
+		when(contractProviderMock.toContract(arrendekontrakt1)).thenThrow(Problem.valueOf(I_AM_A_TEAPOT, "Error occurred"));
 		when(contractProviderMock.toContract(arrendekontrakt2)).thenReturn(contract);
 
 		// Act
