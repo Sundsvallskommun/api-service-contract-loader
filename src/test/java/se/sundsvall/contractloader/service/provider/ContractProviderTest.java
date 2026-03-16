@@ -38,7 +38,7 @@ import static generated.se.sundsvall.contract.AddressType.POSTAL_ADDRESS;
 import static generated.se.sundsvall.contract.ContractType.LEASE_AGREEMENT;
 import static generated.se.sundsvall.contract.IntervalType.YEARLY;
 import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
-import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_MOORING;
+import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_MISC;
 import static generated.se.sundsvall.contract.StakeholderRole.CONTACT_PERSON;
 import static generated.se.sundsvall.contract.StakeholderRole.LESSEE;
 import static generated.se.sundsvall.contract.StakeholderRole.LESSOR;
@@ -99,7 +99,7 @@ class ContractProviderTest {
 		assertThat(contract).isNotNull();
 		assertThat(contract.getExternalReferenceId()).isEqualTo(arrendekontraktEntity.getArrendekontrakt());
 		assertThat(contract.getType()).isEqualTo(LEASE_AGREEMENT);
-		assertThat(contract.getLeaseType()).isEqualTo(USUFRUCT_MOORING);
+		assertThat(contract.getLeaseType()).isEqualTo(LAND_LEASE_MISC);
 		assertThat(contract.getStatus()).isEqualTo(TERMINATED);
 		assertThat(contract.getDuration()).isEqualTo(new Duration().leaseDuration(1).unit(YEARS));
 		assertThat(contract.getInvoicing()).isEqualTo(new Invoicing().invoicedIn(ADVANCE).invoiceInterval(YEARLY));
@@ -199,7 +199,7 @@ class ContractProviderTest {
 			.indexType("KPI 80")
 			.indexationRate(BigDecimal.valueOf(0.5))
 			.indexYear(2014)
-			.indexNumber(300)
+			.indexNumber(BigDecimal.valueOf(300.0))
 			.currency("SEK")
 			.additionalInformation(List.of("Avgift, båtplats")));
 

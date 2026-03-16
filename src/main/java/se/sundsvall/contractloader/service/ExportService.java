@@ -48,7 +48,7 @@ public class ExportService {
 					contractClient.createContract(MUNICIPALITY_ID, contractProvider.toContract(contract));
 					arrendekontraktRepository.save(contract.withSendStatus(SENT));
 				} catch (Exception e) {
-					LOGGER.error("Something went wrong for contract: {}", contract.getArrendekontrakt(), e);
+					LOGGER.error("Something went wrong for contract: {}, message: {}", contract.getArrendekontrakt(), e.getMessage());
 					arrendekontraktRepository.save(contract.withSendStatus(FAILED));
 				}
 			}

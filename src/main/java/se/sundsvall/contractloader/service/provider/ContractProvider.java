@@ -50,6 +50,7 @@ import static generated.se.sundsvall.contract.AddressType.POSTAL_ADDRESS;
 import static generated.se.sundsvall.contract.ContractType.LAND_LEASE_PUBLIC;
 import static generated.se.sundsvall.contract.ContractType.LEASEHOLD;
 import static generated.se.sundsvall.contract.ContractType.LEASE_AGREEMENT;
+import static generated.se.sundsvall.contract.ContractType.OBJECT_LEASE;
 import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
 import static generated.se.sundsvall.contract.Party.LESSEE;
 import static generated.se.sundsvall.contract.StakeholderType.MUNICIPALITY;
@@ -79,6 +80,7 @@ import static se.sundsvall.contractloader.service.Constants.CONTRACT_DETAILS_ORI
 import static se.sundsvall.contractloader.service.Constants.CONTRACT_DETAILS_ORIGINAL_FILE_PARAMETER;
 import static se.sundsvall.contractloader.service.Constants.CONTRACT_DETAILS_TERMINATED_BY_PARAMETER;
 import static se.sundsvall.contractloader.service.Constants.CONTRACT_DETAILS_TERMINATION_DATE_PARAMETER;
+import static se.sundsvall.contractloader.service.Constants.HYRESOBJECT;
 import static se.sundsvall.contractloader.service.Constants.INVOICE_INFO_ARTICLE_PARAMETER;
 import static se.sundsvall.contractloader.service.Constants.INVOICE_INFO_GROUP_NAME;
 import static se.sundsvall.contractloader.service.Constants.INVOICE_INFO_MARKUP_PARAMETER;
@@ -142,6 +144,7 @@ public final class ContractProvider {
 		}
 		return switch (contractType) {
 			case ALLMAN_PLATSUPPLATELSE -> LAND_LEASE_PUBLIC;
+			case HYRESOBJECT -> OBJECT_LEASE;
 			case TOMTRATT -> LEASEHOLD;
 			default -> LEASE_AGREEMENT;
 		};
@@ -446,14 +449,20 @@ public final class ContractProvider {
 		if (isBlank(persOrgNr)) {
 			throw Problem.valueOf(PRECONDITION_FAILED, "Person- or organization number is blank");
 		}
-		var partyId = Optional.of("");
-		try {
-			partyId = partyClient.getPartyId(MUNICIPALITY_ID, ENTERPRISE, persOrgNr);
-		} catch (Exception _) {
-			LOGGER.warn("Could not retrieve partyId for organization number {}", persOrgNr);
+		Optional<String> partyId = Optional.empty();
+		if (!persOrgNr.startsWith("19") && !persOrgNr.startsWith("200")) { // Simple check to avoid looking up organization numbers that are actually person numbers
+			try {
+				partyId = partyClient.getPartyId(MUNICIPALITY_ID, ENTERPRISE, persOrgNr);
+			} catch (Exception _) {
+				LOGGER.warn("Could not retrieve partyId as enterprise for {}", persOrgNr);
+			}
 		}
 		if (partyId.isEmpty()) {
-			partyId = partyClient.getPartyId(MUNICIPALITY_ID, PRIVATE, persOrgNr);
+			try {
+				partyId = partyClient.getPartyId(MUNICIPALITY_ID, PRIVATE, persOrgNr);
+			} catch (Exception _) {
+				LOGGER.warn("Could not retrieve partyId as private person for {}", persOrgNr);
+			}
 		}
 		return partyId.orElseThrow(() -> Problem.valueOf(PRECONDITION_FAILED,
 			"No partyId found for person- or organization number"));
@@ -503,7 +512,7 @@ public final class ContractProvider {
 				.total(toBigDecimal(row.getBasarshyra()))
 				.indexType(ofNullable(row.getIndexnamn()).filter(not(String::isBlank)).orElse(null))
 				.indexYear(ofNullable(row.getIndexbasar()).map(this::toInteger).orElse(null))
-				.indexNumber(ofNullable(row.getIndexbasvarde()).map(this::toInteger).orElse(null))
+				.indexNumber(ofNullable(row.getIndexbasvarde()).map(this::toBigDecimal).orElse(null))
 				.indexationRate(getIndexationRate(row))
 				.additionalInformation(additionalInformation))
 			.orElse(null);

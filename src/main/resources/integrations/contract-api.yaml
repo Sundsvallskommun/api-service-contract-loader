@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "6.0"
 servers:
-  - url: http://localhost:52321
+  - url: http://localhost:58360
     description: Generated server url
 tags:
   - name: Contract attachments
@@ -620,23 +620,13 @@ components:
         type:
           type: string
           format: uri
-        parameters:
-          type: object
-          additionalProperties: {}
         title:
           type: string
         detail:
           type: string
         status:
-          $ref: "#/components/schemas/StatusType"
-    StatusType:
-      type: object
-      properties:
-        statusCode:
           type: integer
           format: int32
-        reasonPhrase:
-          type: string
     Address:
       type: object
       properties:
@@ -688,13 +678,11 @@ components:
           description: The attachment filename
           examples:
             - LeaseContract12.pdf
-          minLength: 1
         mimeType:
           type: string
           description: The attachment mime-type
           examples:
             - application/pdf
-          minLength: 1
         note:
           type: string
           description: Notes on the attachment
@@ -763,7 +751,6 @@ components:
             $ref: "#/components/schemas/AttachmentMetadata"
             description: Metadata for all attachments
             readOnly: true
-          readOnly: true
         additionalTerms:
           type: array
           items:
@@ -854,6 +841,7 @@ components:
         - PURCHASE_AGREEMENT
         - LAND_LEASE_PUBLIC
         - SHORT_TERM_LEASE_AGREEMENT
+        - OBJECT_LEASE
         - LEASEHOLD
     Crs:
       type: object
@@ -876,6 +864,7 @@ components:
           description: The lease duration value
           examples:
             - "9"
+          minimum: 0
         unit:
           $ref: "#/components/schemas/TimeUnit"
           description: The unit of the duration value
@@ -901,6 +890,7 @@ components:
           description: The lease extension value
           examples:
             - "2"
+          minimum: 0
         unit:
           $ref: "#/components/schemas/TimeUnit"
           description: The unit of the extension value
@@ -1002,11 +992,10 @@ components:
           examples:
             - "2021"
         indexNumber:
-          type: integer
-          format: int32
+          type: number
           description: Index number
           examples:
-            - "1"
+            - "1.00"
         indexationRate:
           type: number
           description: Specifies what proportion of the consumer price index should
@@ -1085,11 +1074,9 @@ components:
       enum:
         - LAND_LEASE_RESIDENTIAL
         - SITE_LEASE_COMMERCIAL
-        - USUFRUCT_MOORING
         - USUFRUCT_HUNTING
         - USUFRUCT_FARMING
         - USUFRUCT_MISC
-        - OBJECT_LEASE
         - LAND_LEASE_MISC
         - OTHER_FEE
     Leasehold:
@@ -1225,6 +1212,7 @@ components:
           description: The period of notice
           examples:
             - "3"
+          minimum: 0
         unit:
           $ref: "#/components/schemas/TimeUnit"
           description: The unit of the periodOfNotice value
@@ -1436,160 +1424,42 @@ components:
     ConstraintViolationProblem:
       type: object
       properties:
-        cause:
-          $ref: "#/components/schemas/ThrowableProblem"
-        stackTrace:
-          type: array
-          items:
-            type: object
-            properties:
-              classLoaderName:
-                type: string
-              moduleName:
-                type: string
-              moduleVersion:
-                type: string
-              methodName:
-                type: string
-              fileName:
-                type: string
-              lineNumber:
-                type: integer
-                format: int32
-              className:
-                type: string
-              nativeMethod:
-                type: boolean
         type:
           type: string
           format: uri
         status:
-          $ref: "#/components/schemas/StatusType"
+          type: integer
+          format: int32
         violations:
           type: array
           items:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
-        message:
-          type: string
         instance:
           type: string
           format: uri
-        parameters:
-          type: object
-          additionalProperties: {}
         detail:
           type: string
-        suppressed:
-          type: array
-          items:
-            type: object
-            properties:
-              stackTrace:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    classLoaderName:
-                      type: string
-                    moduleName:
-                      type: string
-                    moduleVersion:
-                      type: string
-                    methodName:
-                      type: string
-                    fileName:
-                      type: string
-                    lineNumber:
-                      type: integer
-                      format: int32
-                    className:
-                      type: string
-                    nativeMethod:
-                      type: boolean
-              message:
-                type: string
-              localizedMessage:
-                type: string
-        localizedMessage:
-          type: string
+        causeAsProblem:
+          $ref: "#/components/schemas/ThrowableProblem"
     ThrowableProblem:
       type: object
       properties:
-        cause: {}
-        stackTrace:
-          type: array
-          items:
-            type: object
-            properties:
-              classLoaderName:
-                type: string
-              moduleName:
-                type: string
-              moduleVersion:
-                type: string
-              methodName:
-                type: string
-              fileName:
-                type: string
-              lineNumber:
-                type: integer
-                format: int32
-              className:
-                type: string
-              nativeMethod:
-                type: boolean
-        message:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
           type: string
         instance:
           type: string
           format: uri
-        type:
-          type: string
-          format: uri
-        parameters:
-          type: object
-          additionalProperties: {}
-        title:
-          type: string
-        detail:
-          type: string
-        status:
-          $ref: "#/components/schemas/StatusType"
-        suppressed:
-          type: array
-          items:
-            type: object
-            properties:
-              stackTrace:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    classLoaderName:
-                      type: string
-                    moduleName:
-                      type: string
-                    moduleVersion:
-                      type: string
-                    methodName:
-                      type: string
-                    fileName:
-                      type: string
-                    lineNumber:
-                      type: integer
-                      format: int32
-                    className:
-                      type: string
-                    nativeMethod:
-                      type: boolean
-              message:
-                type: string
-              localizedMessage:
-                type: string
-        localizedMessage:
-          type: string
+        causeAsProblem: {}
     Violation:
       type: object
       properties:
@@ -1623,14 +1493,14 @@ components:
     Change:
       type: object
       properties:
-        path:
-          type: string
         type:
           type: string
           enum:
             - ADDITION
             - REMOVAL
             - MODIFICATION
+        path:
+          type: string
         oldValue:
           $ref: "#/components/schemas/JsonNode"
         newValue:
@@ -1644,16 +1514,77 @@ components:
         newVersion:
           type: integer
           format: int32
+        changes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Change"
         availableVersions:
           type: array
           items:
             type: integer
             format: int32
-        changes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Change"
-    JsonNode: {}
+    JsonNode:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        array:
+          type: boolean
+        "null":
+          type: boolean
+        object:
+          type: boolean
+        float:
+          type: boolean
+        container:
+          type: boolean
+        binary:
+          type: boolean
+        valueNode:
+          type: boolean
+        missingNode:
+          type: boolean
+        nodeType:
+          type: string
+          enum:
+            - ARRAY
+            - BINARY
+            - BOOLEAN
+            - MISSING
+            - "NULL"
+            - NUMBER
+            - OBJECT
+            - POJO
+            - STRING
+        integralNumber:
+          type: boolean
+        bigDecimal:
+          type: boolean
+        bigInteger:
+          type: boolean
+        floatingPointNumber:
+          type: boolean
+        number:
+          type: boolean
+        pojo:
+          type: boolean
+        textual:
+          type: boolean
+          deprecated: true
+        int:
+          type: boolean
+        long:
+          type: boolean
+        double:
+          type: boolean
+        string:
+          type: boolean
+        short:
+          type: boolean
+        boolean:
+          type: boolean
+        embeddedValue:
+          type: boolean
     SpecificationContractEntity: {}
     PageContract:
       type: object
@@ -1674,12 +1605,12 @@ components:
         number:
           type: integer
           format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
         first:
           type: boolean
         last:
           type: boolean
-        sort:
-          $ref: "#/components/schemas/SortObject"
         numberOfElements:
           type: integer
           format: int32
@@ -1695,14 +1626,14 @@ components:
           format: int64
         sort:
           $ref: "#/components/schemas/SortObject"
-        paged:
-          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
+        paged:
+          type: boolean
         unpaged:
           type: boolean
     SortObject:
